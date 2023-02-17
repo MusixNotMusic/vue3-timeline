@@ -2,7 +2,7 @@
   "name": "vue3-timeline-bar",
   "author": "MusixNotMusic<https://github.com/MusixNotMusic>",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/vue3-timeline-bar.umd.js",
   "module": "dist/vue3-timeline-bar.es.js",
   "exports": {
@@ -33,7 +33,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "d3-scale": "^4.0.2",
     "element-plus": "^1.1.0-beta.24",
     "events": "^3.3.0",
     "jquery": "^3.6.0",
