@@ -56,7 +56,6 @@ import TimeBarCanvas from './TimeBarCanvas.vue'
 import TimeTickLabel from './TimeTickLable.vue'
 import TimePointer from './TimePointer.vue'
 import TimeAnimationBar from './TimeAnimationBar.vue'
-import '../../iconfont/patch.css'
 import '../../iconfont/iconfont.css'
 
 enum MODE {

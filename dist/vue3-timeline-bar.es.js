@@ -14217,13 +14217,13 @@ function dA(e, t, n, i, a, o) {
     ]), 1032, ["onePixelTimeUnit", "mode", "currentTimeStamp", "onModeChange", "onCurrentTimeChange"])
   ], 8, fA);
 }
-const Yf = /* @__PURE__ */ Tr(uA, [["render", dA], ["__scopeId", "data-v-f097d818"]]), mA = {
+const Yf = /* @__PURE__ */ Tr(uA, [["render", dA], ["__scopeId", "data-v-f00d8f22"]]), mA = {
   install(e) {
     e.component(Yf.name, Yf), e.component(To.name, To);
   }
 };
 export {
   To as TimeBarCanvas,
-  Yf as Timeline,
+  Yf as TimeLine,
   mA as plugin
 };

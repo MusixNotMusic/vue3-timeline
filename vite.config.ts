@@ -21,7 +21,7 @@ export default defineConfig({
   build: {
     emptyOutDir: false, // 避免dist被清空
     lib: {
-      entry: path.resolve(__dirname, 'packages/src/index.js'),
+      entry: path.resolve(__dirname, 'packages/index.js'),
       name: pkg.name,
       fileName: (format) => `${pkg.name}.${format}.js`,
     },

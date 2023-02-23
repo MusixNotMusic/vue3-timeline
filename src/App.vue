@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
+// import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
+import { Timeline } from 'vue3-timeline-bar'
+import 'vue3-timeline-bar/dist/style.css'
 </script>
 
 <template>
@@ -11,7 +13,8 @@ import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
-  <TimeLine theme="blue"></TimeLine>
+  <!-- <TimeLine theme="blue"></TimeLine> -->
+  <Timeline theme="blue"></Timeline>
 </template>
 
 <style scoped>
