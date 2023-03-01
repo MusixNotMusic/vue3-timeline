@@ -14071,7 +14071,7 @@ const lA = /* @__PURE__ */ Tr(nA, [["render", oA], ["__scopeId", "data-v-7c68466
 var Kd = /* @__PURE__ */ ((e) => (e.Default = "default", e.Live = "live", e.Animation = "animation", e))(Kd || {});
 const uA = {
   name: "TimeLine",
-  emit: ["animationTimeChange", "currentPointerTimeChange"],
+  emit: ["animationTimeChange", "currentPointerTimeChange", "animationRangeTimeChange"],
   components: {
     TimeController: CP,
     TimeBarCanvas: To,
@@ -14111,13 +14111,13 @@ const uA = {
     }, f = (M) => M.getTime() > pe().valueOf(), d = () => {
       a.isLive = !a.isLive, a.mode = a.isLive ? "live" : "";
     }, m = ({ isPlayMode: M }) => {
-      a.mode = M ? "animation" : "default";
+      a.mode = M ? "animation" : "default", M && t("animationRangeTimeChange", { startTime: a.startAnimationTimeStamp, offsetTime: a.offsetTime * 60 * 60 * 1e3 });
     }, y = () => {
       a.mode === "animation" ? i.value && i.value.prevTimeTick() : n.value && n.value.prevTimeTick();
     }, w = () => {
       a.mode === "animation" ? i.value && i.value.nextTimeTick() : n.value && n.value.nextTimeTick();
     }, b = ({ startTime: M, offsetTime: F }) => {
-      a.startAnimationTimeStamp = M.valueOf(), a.offsetTime = F;
+      a.startAnimationTimeStamp = M.valueOf(), a.offsetTime = F, t("animationRangeTimeChange", { startTime: M, offsetTime: F * 60 * 60 * 1e3 });
     }, D = (M) => {
       console.log("playAnimationClick"), M ? i.value.playAnimationTick(a.multipleValue) : i.value.stopAnimationTick();
     }, $ = ({ isPlay: M, value: F }) => {
@@ -14127,7 +14127,7 @@ const uA = {
     }, C = ({ time: M }) => {
       a.datePickerTime = new Date(M), t("currentPointerTimeChange", { time: M });
     }, E = ({ animationTimeStamp: M }) => {
-      console.log("animationTimeStamp ==>", M, new Date(M)), t("animationTimeChange", { time: M });
+      t("animationTimeChange", { time: M });
     };
     return Hf(() => {
     }), {
@@ -14217,7 +14217,7 @@ function dA(e, t, n, i, a, o) {
     ]), 1032, ["onePixelTimeUnit", "mode", "currentTimeStamp", "onModeChange", "onCurrentTimeChange"])
   ], 8, fA);
 }
-const Yf = /* @__PURE__ */ Tr(uA, [["render", dA], ["__scopeId", "data-v-f00d8f22"]]), mA = {
+const Yf = /* @__PURE__ */ Tr(uA, [["render", dA], ["__scopeId", "data-v-be8a1c33"]]), mA = {
   install(e) {
     e.component(Yf.name, Yf), e.component(To.name, To);
   }

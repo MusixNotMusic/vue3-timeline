@@ -66,7 +66,7 @@ enum MODE {
 
 export default {
     name: 'TimeLine',
-    emit: ['animationTimeChange', 'currentPointerTimeChange'],
+    emit: ['animationTimeChange', 'currentPointerTimeChange', 'animationRangeTimeChange'],
     components: {
       TimeController,
       TimeBarCanvas,
@@ -122,6 +122,9 @@ export default {
 
         const controllerModeChange = ({ isPlayMode }) => {
           state.mode = isPlayMode ? MODE.Animation : MODE.Default
+          if (isPlayMode) {
+            emit('animationRangeTimeChange', { startTime: state.startAnimationTimeStamp, offsetTime: state.offsetTime * 60 * 60 * 1000 })
+          }
         }
 
         const preTimeTickClick = () => {
@@ -151,6 +154,7 @@ export default {
         const animationRangeTimeChange = ({ startTime, offsetTime }) => {
           state.startAnimationTimeStamp = startTime.valueOf()
           state.offsetTime = offsetTime
+          emit('animationRangeTimeChange', { startTime, offsetTime: offsetTime* 60 * 60 * 1000 })
         }
 
         const playAnimationClick = (isPlay) => {
@@ -185,7 +189,6 @@ export default {
         }
 
         const animationTimeChange = ({animationTimeStamp}) => {
-          console.log('animationTimeStamp ==>', animationTimeStamp, new Date(animationTimeStamp))
           emit('animationTimeChange', { time: animationTimeStamp })
         }
 

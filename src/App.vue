@@ -1,7 +1,14 @@
 <script setup lang="ts">
-// import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
-import { Timeline } from 'vue3-timeline-bar'
+import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
+// import { Timeline } from 'vue3-timeline-bar'
 import 'vue3-timeline-bar/dist/style.css'
+
+const animationTimeChange = (data) => {
+  console.log('animationTimeChange ==>', data);
+}
+const animationRangeTimeChange = ({ startTime, offsetTime }) => {
+  console.log('animationRangeTimeChange', startTime, offsetTime)
+}
 </script>
 
 <template>
@@ -14,7 +21,7 @@ import 'vue3-timeline-bar/dist/style.css'
     </a>
   </div>
   <!-- <TimeLine theme="blue"></TimeLine> -->
-  <Timeline theme="blue"></Timeline>
+  <TimeLine theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange"></TimeLine>
 </template>
 
 <style scoped>
