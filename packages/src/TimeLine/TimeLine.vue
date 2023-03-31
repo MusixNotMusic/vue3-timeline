@@ -66,7 +66,12 @@ enum MODE {
 
 export default {
     name: 'TimeLine',
-    emit: ['animationTimeChange', 'currentPointerTimeChange', 'animationRangeTimeChange'],
+    emit: [
+      'animationTimeChange', 
+      'currentPointerTimeChange', 
+      'animationRangeTimeChange',  
+      'playAnimationClick'
+    ],
     components: {
       TimeController,
       TimeBarCanvas,
@@ -159,18 +164,30 @@ export default {
 
         const playAnimationClick = (isPlay) => {
           console.log('playAnimationClick')
-          if (isPlay) {
-            TimeAnimationBarRef.value.playAnimationTick(state.multipleValue)
-          } else {
-            TimeAnimationBarRef.value.stopAnimationTick()
+          if (typeof Number(state.multipleValue) === 'number') {
+            if (isPlay) {
+              TimeAnimationBarRef.value.playAnimationTick(state.multipleValue)
+            } else {
+              TimeAnimationBarRef.value.stopAnimationTick()
+            }
           }
+
+          emit('playAnimationClick', { isPlay, multiple: state.multipleValue })
         }
 
         const multipleValueChange = ({ isPlay, value}) => {
           state.multipleValue = value
           if (isPlay) {
             TimeAnimationBarRef.value.stopAnimationTick()
-            TimeAnimationBarRef.value.playAnimationTick(state.multipleValue)
+            if (typeof Number(state.multipleValue) === 'number') {
+              TimeAnimationBarRef.value.playAnimationTick(state.multipleValue)
+            }
+          }
+        }
+
+        const setPointerByTimeStamp = (time) => {
+          if (TimeAnimationBarRef.value) {
+            TimeAnimationBarRef.value.setPointerByTimeStamp(time)
           }
         }
 
@@ -213,7 +230,8 @@ export default {
           playAnimationClick,
           modeChange,
           currentTimeChange,
-          animationTimeChange
+          animationTimeChange,
+          setPointerByTimeStamp
         }
     }
 }

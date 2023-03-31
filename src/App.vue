@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import {ref} from 'vue'
 import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
 // import { Timeline } from 'vue3-timeline-bar'
 import 'vue3-timeline-bar/dist/style.css'
+
+const timeLineRef = ref(null)
 
 const animationTimeChange = (data) => {
   console.log('animationTimeChange ==>', data);
@@ -9,19 +12,21 @@ const animationTimeChange = (data) => {
 const animationRangeTimeChange = ({ startTime, offsetTime }) => {
   console.log('animationRangeTimeChange', startTime, offsetTime)
 }
+
+const playAnimationClick = ({ isPlay }) => {
+  console.log('playAnimationClick =>', isPlay)
+}
+window.timeLineRef = timeLineRef
 </script>
 
 <template>
   <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
     <a href="https://vuejs.org/" target="_blank">
       <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
     </a>
   </div>
   <!-- <TimeLine theme="blue"></TimeLine> -->
-  <TimeLine theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange"></TimeLine>
+  <TimeLine ref="timeLineRef" theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange" @playAnimationClick="playAnimationClick"></TimeLine>
 </template>
 
 <style scoped>

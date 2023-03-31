@@ -88,6 +88,15 @@ export default {
       emit('change', { animationTimeStamp: state.pointerOffset *  props.unitOfMs + props.startAnimationTimeStamp } )
     }
 
+    /**
+     * 主动触发动画指针
+     */
+    const setPointerByTimeStamp = (time) => {
+      const pointerLeft = (time - props.startAnimationTimeStamp) / props.unitOfMs
+      const maxLeft = props.offsetTime * 3600 * 1000 / props.unitOfMs
+      state.pointerOffset = Math.min(Math.max(pointerLeft, 0), maxLeft)
+    }
+
     const nextTimeTick = () => {
       updateAnimationTime()
     }
@@ -124,7 +133,8 @@ export default {
       playAnimationTick,
       stopAnimationTick,
       prevTimeTick,
-      nextTimeTick
+      nextTimeTick,
+      setPointerByTimeStamp
     }
   }
 }

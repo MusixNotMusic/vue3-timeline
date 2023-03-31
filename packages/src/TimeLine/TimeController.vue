@@ -89,7 +89,7 @@ export default {
             showPlayMode: false,
 
             multipleList: [
-                { name: "10X", value: 10 },
+                { name: "auto", value: 'auto' },
                 { name: "3X", value: 3 },
                 { name: "2X", value: 2 },
                 { name: "1X", value: 1 },
