@@ -115,7 +115,7 @@ export default {
 
       watch(() => props.animationTime, (val, old) => {
           if (old !== val) state.animation = val
-      })  
+      })
 
       const RotationOption1Ref = ref(null)
       const RotationOption2Ref = ref(null)
@@ -219,7 +219,7 @@ export default {
 };
 </script>
 
-<style lang="less" scoped>
+<style lang="scss" scoped>
 .time-control {
   height: 30px;
   display: flex;

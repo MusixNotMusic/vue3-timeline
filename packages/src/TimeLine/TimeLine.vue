@@ -56,7 +56,7 @@ import TimeBarCanvas from './TimeBarCanvas.vue'
 import TimeTickLabel from './TimeTickLable.vue'
 import TimePointer from './TimePointer.vue'
 import TimeAnimationBar from './TimeAnimationBar.vue'
-import '../../iconfont/iconfont.css'
+import './iconfont/iconfont.css'
 
 enum MODE {
   Default = 'default',
@@ -67,9 +67,9 @@ enum MODE {
 export default {
     name: 'TimeLine',
     emit: [
-      'animationTimeChange', 
-      'currentPointerTimeChange', 
-      'animationRangeTimeChange',  
+      'animationTimeChange',
+      'currentPointerTimeChange',
+      'animationRangeTimeChange',
       'playAnimationClick'
     ],
     components: {
@@ -236,9 +236,9 @@ export default {
     }
 }
 </script>
-<style lang="less" scoped>
-@import './theme/default.less';
-@import './theme/blue.less';
+<style lang="scss" scoped>
+@import 'theme/default';
+@import 'theme/blue';
 
 .time-line {
       display: flex;

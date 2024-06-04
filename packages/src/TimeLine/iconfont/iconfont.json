@@ -1,0 +1,79 @@
+{
+  "id": "3901749",
+  "name": "临近时间轴功能",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-timeline-",
+  "description": "临近时间轴功能",
+  "glyphs": [
+    {
+      "icon_id": "32056914",
+      "name": "上",
+      "font_class": "shang",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "954912",
+      "name": "保存",
+      "font_class": "baocun",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "1305399",
+      "name": "保存",
+      "font_class": "baocun1",
+      "unicode": "e641",
+      "unicode_decimal": 58945
+    },
+    {
+      "icon_id": "7594182",
+      "name": "24gf-stop",
+      "font_class": "24gf-stop",
+      "unicode": "ea89",
+      "unicode_decimal": 60041
+    },
+    {
+      "icon_id": "27938669",
+      "name": "存储",
+      "font_class": "cunchu",
+      "unicode": "e744",
+      "unicode_decimal": 59204
+    },
+    {
+      "icon_id": "27948523",
+      "name": "日历",
+      "font_class": "rili2",
+      "unicode": "e753",
+      "unicode_decimal": 59219
+    },
+    {
+      "icon_id": "27948986",
+      "name": "播放",
+      "font_class": "bofang1",
+      "unicode": "e755",
+      "unicode_decimal": 59221
+    },
+    {
+      "icon_id": "27949033",
+      "name": "暂停",
+      "font_class": "zanting1",
+      "unicode": "e756",
+      "unicode_decimal": 59222
+    },
+    {
+      "icon_id": "27949331",
+      "name": "左边",
+      "font_class": "zuobian",
+      "unicode": "e757",
+      "unicode_decimal": 59223
+    },
+    {
+      "icon_id": "27949417",
+      "name": "右边",
+      "font_class": "youbian",
+      "unicode": "e758",
+      "unicode_decimal": 59224
+    }
+  ]
+}

@@ -22,7 +22,7 @@ export default {
   }
 }
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .time-tick-list {
   width: 100%;
   position: relative;

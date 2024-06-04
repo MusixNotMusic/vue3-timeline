@@ -139,7 +139,7 @@ export default {
   }
 }
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .time-animation-box {
   width: 100%;
   height: 100%;

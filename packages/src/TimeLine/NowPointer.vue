@@ -65,7 +65,7 @@ export default {
 
     const Ticktock = () => {
       nextTick(() => {
-        const delayTime = props.unitTime
+        const delayTime = 10 * 1000 || props.unitTime
         // 设置 实况
         setTimeout(() => {
           state.timer = _setInterval(() => {
@@ -92,7 +92,7 @@ export default {
   }
 }
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .now-pointer-box {
   width: 100%;
   height: 100%;

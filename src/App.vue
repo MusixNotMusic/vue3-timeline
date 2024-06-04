@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
+import TimeLineNotController from '../packages/src/TimeLine/simple/TimeLineNotController.vue'
 // import { Timeline } from 'vue3-timeline-bar'
 import 'vue3-timeline-bar/dist/style.css'
 
@@ -16,6 +17,10 @@ const animationRangeTimeChange = ({ startTime, offsetTime }) => {
 const playAnimationClick = ({ isPlay }) => {
   console.log('playAnimationClick =>', isPlay)
 }
+
+const currentPointerTimeChange = () => {}
+const stopManualPlay = () => {}
+
 window.timeLineRef = timeLineRef
 </script>
 
@@ -26,7 +31,21 @@ window.timeLineRef = timeLineRef
     </a>
   </div>
   <!-- <TimeLine theme="blue"></TimeLine> -->
-  <TimeLine ref="timeLineRef" theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange" @playAnimationClick="playAnimationClick"></TimeLine>
+  <!-- <TimeLine ref="timeLineRef" theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange" @playAnimationClick="playAnimationClick"></TimeLine> -->
+  <TimeLineNotController theme="blue"
+              ref="timeLineRef"
+              :playIntervalSecond="6 * 60 * 1000"
+              @currentPointerTimeChange="currentPointerTimeChange"
+              @animationTimeChange="animationTimeChange"
+              @animationRangeTimeChange="animationRangeTimeChange"
+              @playAnimationClick="playAnimationClick"
+              @stopManualPlay="stopManualPlay">
+        <template v-slot:tail>
+          <div class="m-l-2 record" >
+              <div class="record-text">REC</div>
+          </div>
+        </template>
+    </TimeLineNotController>
 </template>
 
 <style scoped>

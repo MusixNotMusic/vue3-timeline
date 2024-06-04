@@ -121,7 +121,7 @@ export default {
   }
 }
 </script>
-<style scoped lang="less">
+<style scoped lang="scss">
 .time-pointer-box {
   width: 100%;
   height: 100%;
