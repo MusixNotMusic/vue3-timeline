@@ -7,6 +7,8 @@ import 'vue3-timeline-bar/dist/style.css'
 
 const timeLineRef = ref(null)
 
+const datePickerTime = ref(Date.now);
+
 const animationTimeChange = (data) => {
   console.log('animationTimeChange ==>', data);
 }
@@ -18,7 +20,13 @@ const playAnimationClick = ({ isPlay }) => {
   console.log('playAnimationClick =>', isPlay)
 }
 
-const currentPointerTimeChange = () => {}
+const currentPointerTimeChange = (time) => {
+  console.log('currentPointerTimeChange ==>', time)
+}
+
+const datePickerChange = (time) => {
+  console.log('datePickerChange ==>', time)
+};
 const stopManualPlay = () => {}
 
 window.timeLineRef = timeLineRef
@@ -32,20 +40,30 @@ window.timeLineRef = timeLineRef
   </div>
   <!-- <TimeLine theme="blue"></TimeLine> -->
   <!-- <TimeLine ref="timeLineRef" theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange" @playAnimationClick="playAnimationClick"></TimeLine> -->
-  <TimeLineNotController theme="blue"
-              ref="timeLineRef"
-              :playIntervalSecond="6 * 60 * 1000"
-              @currentPointerTimeChange="currentPointerTimeChange"
-              @animationTimeChange="animationTimeChange"
-              @animationRangeTimeChange="animationRangeTimeChange"
-              @playAnimationClick="playAnimationClick"
-              @stopManualPlay="stopManualPlay">
-        <template v-slot:tail>
-          <div class="m-l-2 record" >
-              <div class="record-text">REC</div>
-          </div>
-        </template>
-    </TimeLineNotController>
+  <div class="time-line-bar">
+    <el-date-picker
+          v-model="datePickerTime"
+          prefix-icon="cdywIF icon-timeline-rili2"
+          ref="datePickerRef"
+          type="datetime"
+          :editable="true"
+          format="YYYY-MM-DD HH:mm"
+          placeholder="选择日期"
+          @change="datePickerChange"/>
+ 
+    <div class="time-line-wrap">
+      <TimeLineNotController theme="blue"
+                ref="timeLineRef"
+                :playIntervalSecond="6 * 60 * 1000"
+                v-model="datePickerTime"
+                @currentPointerTimeChange="currentPointerTimeChange"
+                @animationTimeChange="animationTimeChange"
+                @animationRangeTimeChange="animationRangeTimeChange"
+                @playAnimationClick="playAnimationClick"
+                @stopManualPlay="stopManualPlay">
+      </TimeLineNotController>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -60,5 +78,15 @@ window.timeLineRef = timeLineRef
 }
 .logo.vue:hover {
   filter: drop-shadow(0 0 2em #42b883aa);
+}
+
+.time-line-bar {
+  display: flex;
+  position: relative;
+}
+
+.time-line-wrap {
+  position: relative;
+  width: 100%;
 }
 </style>

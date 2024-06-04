@@ -1,6 +1,6 @@
 <template>
     <div class="time-line" :theme="props.theme">
-        <div class="t-data-search" @click="datePickerRef.focus()">
+        <!-- <div class="t-data-search" @click="datePickerRef.focus()">
             <el-date-picker
                     v-model="datePickerTime"
                     prefix-icon="cdywIF icon-timeline-rili2"
@@ -12,7 +12,7 @@
                     placeholder="选择日期"
                     :disabledDate="disabledDate"
                     @change="datePickerChange"/>
-        </div>
+        </div> -->
 
         <TimeNotController
                 :animationTime="startAnimationTimeStamp"
@@ -42,7 +42,7 @@
     </div>
 </template>
 <script lang="ts">
-import {onBeforeMount, onMounted, reactive, toRefs, ref} from 'vue'
+import { onMounted, reactive, toRefs, ref} from 'vue'
 import moment from 'moment'
 
 import TimeNotController from './TimeNotController.vue'
@@ -77,7 +77,7 @@ export default {
           type: String,
           default: 'default'
         },
-        currentTime: {
+        value: {
           type: [Date, Number],
           default: new Date()
         },
@@ -107,11 +107,11 @@ export default {
           multipleValue: 3,
 
           isLive: false,
-          datePickerTime: new Date(props.currentTime.valueOf()),
+          datePickerTime: new Date(props.value.valueOf()),
           mode: MODE.Default,
           MODE: MODE,
           isAutoPlay: false,
-          currentTimestamp: new Date(props.currentTime.valueOf())
+          currentTimestamp: new Date(props.value.valueOf())
         })
 
         const datePickerChange = () => {
