@@ -42,7 +42,7 @@ enum Mode {
 };
 
 export default {
-    name: 'TimeLineNotController',
+    name: 'TimeLineMain',
     emit: [
       'autoAnimationTimeStampChange',
       'manualAnimationTimeStampChange',
