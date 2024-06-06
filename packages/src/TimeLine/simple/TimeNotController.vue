@@ -1,13 +1,13 @@
 <template>
     <div class="time-control">
-        <span class="cdywIF icon-timeline-zuobian icon-color" @click="preTimeTick"></span>
+        <span class="cdywIF icon-timeline-zuobian icon-color" @mousedown="preTimeTick($event)" @mouseup="mouseUpClear"></span>
 
         <span
             class="cdywIF icon-timeline-bofang1 icon-color"
             :class="{ 'icon-timeline-bofang1': !isPlay, 'icon-timeline-zanting1': isPlay }"
             @click="clickPlayHandle()" ></span>
 
-        <span class="cdywIF icon-timeline-youbian icon-color" @click="nextTimeTick"></span>
+        <span class="cdywIF icon-timeline-youbian icon-color" @mousedown="nextTimeTick($event)" @mouseup="mouseUpClear"></span>
     </div>
 </template>
 
@@ -22,8 +22,8 @@ export default {
           isPlay: false,
       });
 
-      onMounted(() => {
-      });
+      let timer = -1;
+      let counter = 0;
 
       // 点击播放按钮
       const clickPlayHandle = () => {
@@ -33,12 +33,28 @@ export default {
 
       // 上一刻度
       const preTimeTick = () => {
-         emit('preTimeTickClick', { value: -1 })
+        counter = 0;
+        emit('preTimeTickClick', { value: -1 })
+        timer = setInterval(() => {
+          const rate = Math.E ** Math.min(5, counter++) | 0;
+          emit('preTimeTickClick', { value: -1 * rate })
+        }, 200)
       };
+
       // 下一刻度
-      const nextTimeTick = () => {
-          emit('nextTimeTickClick', { value: 1 })
+      const nextTimeTick = (event) => {
+        counter = 0;
+        emit('nextTimeTickClick', { value: 1 })
+        timer = setInterval(() => {
+          console.log('nextTimeTick ==>', event.timeStamp) 
+          const rate = Math.E ** Math.min(5, counter++) | 0;
+          emit('nextTimeTickClick', { value: 1 * rate })
+        }, 200)
       };
+
+      const mouseUpClear = () => {
+        clearInterval(timer)
+      }
 
       const setPlayStatus = () => {
           state.isPlay = true;
@@ -55,6 +71,7 @@ export default {
         clickPlayHandle,
         preTimeTick,
         nextTimeTick,
+        mouseUpClear,
         setPlayStatus,
         setStopStatus
       };

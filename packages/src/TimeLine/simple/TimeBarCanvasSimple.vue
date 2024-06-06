@@ -103,8 +103,8 @@ export default {
 
       const addCanvasEventListener = () => {
         canvasTimeBar.on('time-bar-click', ({offset}) => {
-          const currentTimeStamp = state.startTimeStamp + offset * state.unitOfMs;
-          emit('change', currentTimeStamp);
+          const currentTimeStamp = Math.ceil(state.startTimeStamp + offset * state.unitOfMs);
+          emit('change', currentTimeStamp.valueOf());
           emit('clickTimeBar')
         })
 
@@ -119,24 +119,21 @@ export default {
       }
 
       const freeTimeStampChange = (time) => {
-        emit('change', time);
+        emit('change', time.valueOf());
       }
 
       const nowTimeStampChange = ({ offset, needNextPage, nowTimeStamp }) => {
         emit('nowTimeStampChange', nowTimeStamp);
       }
 
-      const setRealTime = (time) => {
+      const prevTimeTick = (rate) => {
+        console.log('prevTimeTick', rate)
+        emit('change', props.currentTimeStamp + state.unitOfMs * rate.value );
       }
 
-      const prevTimeTick = () => {
-        console.log('prevTimeTick')
-        emit('change', props.currentTimeStamp - state.unitOfMs);
-      }
-
-      const nextTimeTick = () => {
-        console.log('nextTimeTick')
-        emit('change', props.currentTimeStamp + state.unitOfMs);
+      const nextTimeTick = (rate) => {
+        console.log('nextTimeTick', rate)
+        emit('change', props.currentTimeStamp + state.unitOfMs * rate.value);
       }
 
       onMounted(() => {
@@ -163,9 +160,6 @@ export default {
         nowTimeStampChange,
         prevTimeTick,
         nextTimeTick,
-        setRealTime,
-        // setLiveMode,
-        // updateCurrentTime
       };
     }
 }

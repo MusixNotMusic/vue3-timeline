@@ -9,7 +9,7 @@
 <script>
 import { ref, onMounted, reactive, watch, computed } from 'vue';
 import moment from 'moment';
-import { carryBitTable, parseTimeStringToObject } from './utils/parseTime'
+import { carryBitTable, parseTimeStringToObject } from './utils/parseTime';
 
 export default {
   name: 'TimeTickLabel',
@@ -55,10 +55,10 @@ export default {
       state.timeFormatText = moment(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
     }
 
-    const updateFreeTimeStamp = (offset) => {
-      const freeTimeStamp = props.startTimeStamp + offset * props.unitTime;
+    const updateFreeTimeStamp = (offset, done) => {
+      const freeTimeStamp = Math.ceil(props.startTimeStamp + offset * props.unitTime);
       state.timeFormatText = moment(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
-      emit('change', freeTimeStamp)
+      done && emit('change', freeTimeStamp)
     }
 
     watch(() => props.startTimeStamp, (val, old) => {
@@ -107,7 +107,9 @@ export default {
 
         document.addEventListener('mouseup', function () {
           document.removeEventListener('mousemove', onMouseMove)
-          emit('mouseup')
+          if (isClick) {
+            updateFreeTimeStamp(state.offset, true)
+          }
           isClick = false
           state.isTransition = true;
         })
@@ -196,7 +198,7 @@ export default {
 }
 
 .transitionLeft {
-  transition: left 0.5s 0.1s;
+  transition: left 0.5s 0.2s;
   transition-timing-function: ease, step-start, cubic-bezier(0.1, 0.7, 1, 0.1);
 }
 </style>

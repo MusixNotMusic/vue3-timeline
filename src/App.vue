@@ -7,26 +7,38 @@ import 'vue3-timeline-bar/dist/style.css'
 
 const timeLineRef = ref(null)
 
-const datePickerTime = ref(Date.now);
+const datePickerTime = ref(new Date());
 
 const autoAnimationTimeStampChange = (data) => {
   console.log('autoAnimationTimeStampChange ==>', data);
 }
 
-const playAnimationClick = ({ isPlay }) => {
-  console.log('playAnimationClick =>', isPlay)
+let timer = -1;
+const manualAnimationTimeStampChange = (controller) => {
+  console.log('manualAnimationTimeStampChange ==>', controller);
+  let timestamp = controller.currentTimestamp.valueOf();
+  timer = setInterval(() => {
+    timestamp = timestamp + 60 * 1000;
+    console.log('timestamp ==>', timestamp);
+    controller.nextTick(timestamp);
+
+    datePickerTime.value = new Date(timestamp);
+  }, 1000)
+  controller.stop = () => {
+    clearInterval(timer);
+  }
 }
 
+
 const currentTimeChange = (time) => {
-  console.log('currentTimeChange ==>', time)
+  console.log('currentTimeChange ==>', time);
+  datePickerTime.value = new Date(time.valueOf());
 }
 
 const datePickerChange = (time) => {
-  console.log('datePickerChange ==>', time)
+  // console.log('datePickerChange ==>', time)
 };
-const stopManualPlay = () => {}
 
-window.timeLineRef = timeLineRef
 </script>
 
 <template>
@@ -52,9 +64,10 @@ window.timeLineRef = timeLineRef
       <TimeLineNotController theme="blue"
                 ref="timeLineRef"
                 :playIntervalSecond="3 * 60 * 1000"
-                :playMode="'auto'"
-                v-model="datePickerTime"
+                :playMode="'manual'"
+                v-model:value="datePickerTime"
                 @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
+                @manualAnimationTimeStampChange="manualAnimationTimeStampChange"
                 @currentTimeChange="currentTimeChange">
       </TimeLineNotController>
     </div>

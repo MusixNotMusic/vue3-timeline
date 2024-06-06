@@ -45,6 +45,7 @@ export default {
     name: 'TimeLineNotController',
     emit: [
       'autoAnimationTimeStampChange',
+      'manualAnimationTimeStampChange',
       'currentTimeChange',
     ],
     components: {
@@ -60,7 +61,7 @@ export default {
         },
         value: {
           type: [Date, Number],
-          default: new Date()
+          default: Date.now()
         },
         onePixelTimeUnit: {
           type: [Number, String],
@@ -81,21 +82,33 @@ export default {
         const TimeNotControllerRef = ref(null)
 
 
-        const state = reactive({
+        const state: any = reactive({
           isLive: false,
           isPlay: false,
           isAutoPlay: false,
           currentTimestamp: props.value.valueOf(),
-          nowTimeStamp: 0
+          nowTimeStamp: 0,
+          currentMode: Mode.Default,
+          transformMode: Mode.Default
+        })
+
+        watch(() =>props.playMode, (val, old) => {
+          if (val !== old) {
+            toDefault();
+            toAutoStop();
+            toManualStop();
+            setStopStatus();
+          }
+        })
+
+
+        watch(() =>props.value, (val, old) => {
+          if (val.valueOf() !== old.valueOf()) {
+            currentTimeChange(val);
+          }
         })
 
         // =======================
-
-        const state2 = reactive({
-          currentMode: Mode.Default,
-          transformMode: Mode.Default
-        });
-
         const noop = () => {};
 
         const toDefault = () => {
@@ -103,9 +116,11 @@ export default {
         }
 
         const toLive = () => {
-          state.currentTimestamp = state.nowTimeStamp;
+          currentTimeChange(state.nowTimeStamp);
           state.isLive = true;
         }
+
+        // ===========Auto Play==================
 
         let timer = -1;
         const delayTime = 1000;
@@ -120,9 +135,6 @@ export default {
 
         const toAutoStop = () => { 
           _clearInterval(timer);
-          // if(TimeNotControllerRef.value) {
-          //   TimeNotControllerRef.value.setStopStatus()
-          // }
         }
 
         const setStopStatus = () => {
@@ -131,11 +143,30 @@ export default {
           }
         }
 
+        //===========手动播放===============
+        let manualController: any = {};
+        const toManualPlay = () => {
+          manualController.currentTimestamp = state.currentTimestamp;
+          manualController.nextTick = (time) => {
+            state.currentTimestamp = time.valueOf();
+            manualController.currentTimestamp = time.valueOf();
+          };
+
+          emit('manualAnimationTimeStampChange', manualController);
+        }
+
+        const toManualStop = () => {
+          manualController.stop();
+        }
+
         const defulat2live = () => { 
           toLive();
         }
-        const default2manual = () => { 
+        
+        const default2manual = () => {
+          toManualPlay();
         }
+
         const default2auto = () => {
           toAutoPlay();
         }
@@ -144,7 +175,10 @@ export default {
           toDefault();
         }
         const live2live = noop;
-        const live2manual = () => {}
+        const live2manual = () => {
+          toDefault();
+          toManualPlay();
+        }
         const live2auto = () => {
           toDefault();
           toAutoPlay();
@@ -152,10 +186,17 @@ export default {
 
         const manual2defulat = () => {
           toDefault();
+          toManualStop();
+          setStopStatus();
         }
-        const manual2live = () => {}
-        const manual2manual = () => {}
-        const manual2auto = () => {}
+        const manual2live = () => {
+          toManualStop();
+          toLive();
+          setStopStatus();
+        }
+
+        const manual2manual = noop;
+        const manual2auto = noop;
 
         const auto2defulat = () => {
           toDefault();
@@ -167,7 +208,7 @@ export default {
           toLive();
           setStopStatus();
         }
-        const auto2manual = () => {}
+        const auto2manual = noop;
         const auto2auto = noop;
 
         /**
@@ -179,13 +220,6 @@ export default {
           [manual2defulat, manual2live,  manual2manual,  manual2auto],
           [auto2defulat,   auto2live,    auto2manual,    auto2auto],
         ];
-
-        /**
-         * 设置当前模式
-         */
-        const setCurrentMode = (mode) => {
-          state2.currentMode = mode;
-        }
 
         /**
          * action 触发时间
@@ -200,31 +234,26 @@ export default {
         const transformEvent = (eventType, mode) => {
           let transformFunc = noop;
           switch(eventType) {
-            case 'prevTime':   transformFunc = stateMechine[state2.currentMode][mode]; break;
-            case 'nextTime':   transformFunc = stateMechine[state2.currentMode][mode]; break;
-            case 'play':       transformFunc = stateMechine[state2.currentMode][mode]; break;
-            case 'changeTime': transformFunc = stateMechine[state2.currentMode][mode]; break;
-            case 'liveMode':   transformFunc = stateMechine[state2.currentMode][mode]; break;
-            case 'clickTimeBar':   transformFunc = stateMechine[state2.currentMode][mode]; break;
+            case 'prevTime':   transformFunc = stateMechine[state.currentMode][mode]; break;
+            case 'nextTime':   transformFunc = stateMechine[state.currentMode][mode]; break;
+            case 'play':       transformFunc = stateMechine[state.currentMode][mode]; break;
+            case 'changeTime': transformFunc = stateMechine[state.currentMode][mode]; break;
+            case 'liveMode':   transformFunc = stateMechine[state.currentMode][mode]; break;
+            case 'clickTimeBar':   transformFunc = stateMechine[state.currentMode][mode]; break;
           }
 
           transformFunc();
-          state2.currentMode = mode;
+          state.currentMode = mode;
         }
-
-
-
-        const setCurrentTimestamp = (timestamp) => {
-          state.currentTimestamp = timestamp
-        }
-
 
         const liveModeClick = () => {
-            if(state2.currentMode === Mode.Live) {
+            if(state.currentMode === Mode.Live) {
               transformEvent('liveMode', Mode.Default);
-            } else if(state2.currentMode === Mode.Default){
+            } else if(state.currentMode === Mode.Default){
               transformEvent('liveMode', Mode.Live);
-            } else if(state2.currentMode === Mode.Auto){
+            } else if(state.currentMode === Mode.Auto){
+              transformEvent('liveMode', Mode.Live);
+            } else if(state.currentMode === Mode.Manual){
               transformEvent('liveMode', Mode.Live);
             }
         }
@@ -262,24 +291,24 @@ export default {
         }
 
 
-        const preTimeTickClick = () => {
+        const preTimeTickClick = (rate) => {
           if (TimeBarCanvasRef.value) {
-            TimeBarCanvasRef.value.prevTimeTick()
+            TimeBarCanvasRef.value.prevTimeTick(rate)
           }
         }
 
-        const nextTimeTickClick = () => {
+        const nextTimeTickClick = (rate) => {
           if (TimeBarCanvasRef.value) {
-            TimeBarCanvasRef.value.nextTimeTick()
+            TimeBarCanvasRef.value.nextTimeTick(rate)
           }
         }
-
-
 
 
       const currentTimeChange = (time) => {
+        if (state.currentTimestamp.valueOf() !== time.valueOf()) {
           state.currentTimestamp = time
           emit('currentTimeChange', time)
+        }
       }
 
       /**
@@ -288,7 +317,7 @@ export default {
        */
       const nowTimeStampChange = (time) => {
           state.nowTimeStamp = time;
-          if (state2.currentMode === Mode.Live) {
+          if (state.currentMode === Mode.Live) {
             state.currentTimestamp = state.nowTimeStamp;
           }
       }
@@ -311,8 +340,6 @@ export default {
         playAnimationClick,
         currentTimeChange,
         clickTimeBar,
-        toAutoPlay,
-        setCurrentTimestamp,
         nowTimeStampChange
       }
     }
@@ -402,3 +429,7 @@ export default {
   }
 }
 </style>
+
+  function transformEvent(arg0: string, Manual: Mode) {
+    throw new Error('Function not implemented.')
+  }
