@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {ref} from 'vue'
 import TimeLine from '../packages/src/TimeLine/TimeLine.vue'
-import TimeLineNotController from '../packages/src/TimeLine/simple/TimeLineNotController.vue'
+import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
 // import { Timeline } from 'vue3-timeline-bar'
 import 'vue3-timeline-bar/dist/style.css'
 
@@ -61,15 +61,15 @@ const datePickerChange = (time) => {
           @change="datePickerChange"/>
  
     <div class="time-line-wrap">
-      <TimeLineNotController theme="blue"
+      <TimeLineMain theme="blue"
                 ref="timeLineRef"
-                :playIntervalSecond="3 * 60 * 1000"
-                :playMode="'manual'"
+                :stepSecond="3 * 60 * 1000"
+                :playMode="'auto'"
                 v-model:value="datePickerTime"
                 @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
                 @manualAnimationTimeStampChange="manualAnimationTimeStampChange"
                 @currentTimeChange="currentTimeChange">
-      </TimeLineNotController>
+      </TimeLineMain>
     </div>
   </div>
 </template>

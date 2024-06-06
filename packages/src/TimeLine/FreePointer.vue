@@ -198,7 +198,7 @@ export default {
 }
 
 .transitionLeft {
-  transition: left 0.5s 0.2s;
+  transition: left 0.5s 0.1s;
   transition-timing-function: ease, step-start, cubic-bezier(0.1, 0.7, 1, 0.1);
 }
 </style>

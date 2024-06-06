@@ -8,7 +8,7 @@
                 @playAnimationClick="playAnimationClick"
         ></TimeNotController>
 
-        <slot name="tail"></slot>
+        <slot name="TimeBarControlDashboard"></slot>
 
         <div class="live-btn"
             :class="{ 'btn-down': isLive, 'btn-up': !isLive }"
@@ -67,7 +67,7 @@ export default {
           type: [Number, String],
           default: '1m'
         },
-        playIntervalSecond: {
+        stepSecond: {
           type: [Number, String],
           default: 3 * 60 * 1000
         },
@@ -128,7 +128,7 @@ export default {
         const toAutoPlay = () => {
           toAutoStop();
           timer = _setInterval(() => { 
-            state.currentTimestamp = state.currentTimestamp.valueOf() + props.playIntervalSecond;
+            state.currentTimestamp = state.currentTimestamp.valueOf() + props.stepSecond;
             emit('autoAnimationTimeStampChange', state.currentTimestamp);
           }, delayTime)
         }
@@ -159,7 +159,7 @@ export default {
           manualController.stop();
         }
 
-        const defulat2live = () => { 
+        const default2live = () => { 
           toLive();
         }
         
@@ -171,7 +171,7 @@ export default {
           toAutoPlay();
         }
 
-        const live2defulat = () => {
+        const live2default = () => {
           toDefault();
         }
         const live2live = noop;
@@ -184,7 +184,7 @@ export default {
           toAutoPlay();
         }
 
-        const manual2defulat = () => {
+        const manual2default = () => {
           toDefault();
           toManualStop();
           setStopStatus();
@@ -198,7 +198,7 @@ export default {
         const manual2manual = noop;
         const manual2auto = noop;
 
-        const auto2defulat = () => {
+        const auto2default = () => {
           toDefault();
           toAutoStop();
           setStopStatus();
@@ -215,10 +215,10 @@ export default {
          * 状态机列表
          */
         const stateMechine = [
-          [noop,           defulat2live, default2manual, default2auto],
-          [live2defulat,   live2live,    live2manual,    live2auto],
-          [manual2defulat, manual2live,  manual2manual,  manual2auto],
-          [auto2defulat,   auto2live,    auto2manual,    auto2auto],
+          [noop,           default2live, default2manual, default2auto],
+          [live2default,   live2live,    live2manual,    live2auto],
+          [manual2default, manual2live,  manual2manual,  manual2auto],
+          [auto2default,   auto2live,    auto2manual,    auto2auto],
         ];
 
         /**
