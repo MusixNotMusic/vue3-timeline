@@ -52,6 +52,7 @@ window.timeLineRef = timeLineRef
       <TimeLineNotController theme="blue"
                 ref="timeLineRef"
                 :playIntervalSecond="3 * 60 * 1000"
+                :playMode="'auto'"
                 v-model="datePickerTime"
                 @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
                 @currentTimeChange="currentTimeChange">

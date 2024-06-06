@@ -1,6 +1,6 @@
 <template>
   <div class="time-pointer-box" :style="timePointerBoxStyle" ref="timePointerBoxRef">
-    <div class="time-pointer-wrap" :style="{left: state.offset + 'px'}" ref="timePointerWrapRef">
+    <div class="time-pointer-wrap" :class="{transitionLeft: state.isTransition}" :style="{left: state.offset + 'px'}" ref="timePointerWrapRef">
       <div class="current-time" ref="currentTimeRef">{{state.timeFormatText}}</div>
       <div class="time-pointer" ref="timePointerRef"></div>
     </div>
@@ -46,7 +46,8 @@ export default {
 
     const state = reactive({
       timeFormatText: '',
-      offset: 0
+      offset: 0,
+      isTransition: true
     })
 
     const updateOffset = (startTimeStamp, freeTimeStamp) => {
@@ -101,12 +102,14 @@ export default {
           x = e.offsetX
           isClick = true
           document.addEventListener('mousemove', onMouseMove)
+          state.isTransition = false;
         })
 
         document.addEventListener('mouseup', function () {
           document.removeEventListener('mousemove', onMouseMove)
           emit('mouseup')
           isClick = false
+          state.isTransition = true;
         })
       }
     }
@@ -190,5 +193,10 @@ export default {
       opacity: 0.4;
     }
   }
+}
+
+.transitionLeft {
+  transition: left 0.5s 0.1s;
+  transition-timing-function: ease, step-start, cubic-bezier(0.1, 0.7, 1, 0.1);
 }
 </style>

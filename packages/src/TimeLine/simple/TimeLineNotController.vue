@@ -25,7 +25,7 @@
     </div>
 </template>
 <script lang="ts">
-import { onMounted, reactive, toRefs, ref} from 'vue'
+import { onMounted, reactive, toRefs, ref, watch } from 'vue'
 
 import TimeNotController from './TimeNotController.vue'
 import TimeBarCanvasSimple from './TimeBarCanvasSimple.vue'
@@ -70,6 +70,10 @@ export default {
           type: [Number, String],
           default: 3 * 60 * 1000
         },
+        playMode: {
+          type: String,
+          defalt: 'auto'
+        }
     },
     setup (props: any, { emit }) {
         const TimeBarCanvasRef = ref(null)
@@ -225,9 +229,29 @@ export default {
             }
         }
 
+        /**
+         * 1、主动触发
+         * 2、被动触发
+         */
         const playAnimationClick = (isPlay) => {
+          if (props.playMode === 'auto') {
+            autoPlayClick(isPlay);
+          } else if (props.playMode === 'manual'){
+            manualPlayClick(isPlay);
+          }
+        }
+
+        const autoPlayClick = (isPlay) => {
           if (isPlay) {
             transformEvent('play', Mode.Auto);
+          } else {
+            transformEvent('play', Mode.Default);
+          }
+        }
+
+        const manualPlayClick = (isPlay) => {
+          if (isPlay) {
+            transformEvent('play', Mode.Manual);
           } else {
             transformEvent('play', Mode.Default);
           }

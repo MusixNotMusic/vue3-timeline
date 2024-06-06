@@ -94,6 +94,10 @@ export default {
         const endTimeStamp = state.startTimeStamp + state.timeBarWidth * state.unitOfMs;
         if (time < state.startTimeStamp || time > endTimeStamp) {
           initTimeBar();
+
+          if (canvasTimeBar) {
+            canvasTimeBar.renderer();
+          }
         }
       }
 
