@@ -1,10 +1,8 @@
 <template>
     <div class="time-line" :theme="props.theme">
         <TimeNotController
-                :animationTime="startAnimationTimeStamp"
-                :offsetTime="offsetTime"
-                :multipleValue="multipleValue"
                 ref="TimeNotControllerRef"
+                :isPlay="isPlay"
                 @preTimeTickClick="preTimeTickClick"
                 @nextTimeTickClick="nextTimeTickClick"
                 @playAnimationClick="playAnimationClick"
@@ -19,29 +17,22 @@
         <TimeBarCanvasSimple
             ref="TimeBarCanvasRef"
             :onePixelTimeUnit="props.onePixelTimeUnit"
-            :mode="mode"
             :currentTimeStamp="currentTimestamp"
             @clickTimeBar="clickTimeBar"
-            @currentTimeChange="currentTimeChange">
+            @nowTimeStampChange="nowTimeStampChange"
+            @change="currentTimeChange">
         </TimeBarCanvasSimple>
     </div>
 </template>
 <script lang="ts">
 import { onMounted, reactive, toRefs, ref} from 'vue'
-import moment from 'moment'
 
 import TimeNotController from './TimeNotController.vue'
 import TimeBarCanvasSimple from './TimeBarCanvasSimple.vue'
 import TimeTickLabel from '../TimeTickLable.vue'
-import TimePointer from '../TimePointer.vue'
+import TimePointer from '../FreePointer.vue'
 import { _setInterval, _clearInterval } from '../utils/interval'
 import '../iconfont/iconfont.css'
-
-enum MODE {
-  Default = 'default',
-  Live = 'live',
-  Animation = 'animation'
-}
 
 enum Mode {
   Default,
@@ -53,10 +44,8 @@ enum Mode {
 export default {
     name: 'TimeLineNotController',
     emit: [
-      'animationTimeChange',
+      'autoAnimationTimeStampChange',
       'currentTimeChange',
-      'playAnimationClick',
-      'stopManualPlay',
     ],
     components: {
       TimeNotController,
@@ -72,10 +61,6 @@ export default {
         value: {
           type: [Date, Number],
           default: new Date()
-        },
-        animationLoadingPercent: {
-          type: Number,
-          default: 0
         },
         onePixelTimeUnit: {
           type: [Number, String],
@@ -93,17 +78,11 @@ export default {
 
 
         const state = reactive({
-          startAnimationTimeStamp: Date.now() - 60 * 60 * 1000,
-          offsetTime: 1,
-          multipleValue: 3,
-
           isLive: false,
-          datePickerTime: new Date(props.value.valueOf()),
-          mode: Mode.Default,
-          MODE: Mode,
+          isPlay: false,
           isAutoPlay: false,
-          currentTimestamp: new Date(props.value.valueOf()),
-
+          currentTimestamp: props.value.valueOf(),
+          nowTimeStamp: 0
         })
 
         // =======================
@@ -115,40 +94,77 @@ export default {
 
         const noop = () => {};
 
-        const runLiveMode = () => {
-          TimeBarCanvasRef.value.setLiveMode();
+        const toDefault = () => {
+          state.isLive = false;
         }
 
-        const cancelLiveMode = () => {
-          // state.isLive = false;
+        const toLive = () => {
+          state.currentTimestamp = state.nowTimeStamp;
+          state.isLive = true;
+        }
+
+        let timer = -1;
+        const delayTime = 1000;
+
+        const toAutoPlay = () => {
+          toAutoStop();
+          timer = _setInterval(() => { 
+            state.currentTimestamp = state.currentTimestamp.valueOf() + props.playIntervalSecond;
+            emit('autoAnimationTimeStampChange', state.currentTimestamp);
+          }, delayTime)
+        }
+
+        const toAutoStop = () => { 
+          _clearInterval(timer);
+          // if(TimeNotControllerRef.value) {
+          //   TimeNotControllerRef.value.setStopStatus()
+          // }
+        }
+
+        const setStopStatus = () => {
+          if(TimeNotControllerRef.value) {
+            TimeNotControllerRef.value.setStopStatus()
+          }
         }
 
         const defulat2live = () => { 
-          runLiveMode(); 
+          toLive();
         }
         const default2manual = () => { 
-          runLiveMode();
         }
-        const default2auto = () => { 
-          runLiveMode(); 
+        const default2auto = () => {
+          toAutoPlay();
         }
 
         const live2defulat = () => {
-          cancelLiveMode();
+          toDefault();
         }
-        const live2live = () => {}
+        const live2live = noop;
         const live2manual = () => {}
-        const live2auto = () => {}
+        const live2auto = () => {
+          toDefault();
+          toAutoPlay();
+        }
 
-        const manual2defulat = () => {}
+        const manual2defulat = () => {
+          toDefault();
+        }
         const manual2live = () => {}
         const manual2manual = () => {}
         const manual2auto = () => {}
 
-        const auto2defulat = () => {}
-        const auto2live = () => {}
+        const auto2defulat = () => {
+          toDefault();
+          toAutoStop();
+          setStopStatus();
+        }
+        const auto2live = () => {
+          toAutoStop();
+          toLive();
+          setStopStatus();
+        }
         const auto2manual = () => {}
-        const auto2auto = () => {}
+        const auto2auto = noop;
 
         /**
          * 状态机列表
@@ -185,6 +201,7 @@ export default {
             case 'play':       transformFunc = stateMechine[state2.currentMode][mode]; break;
             case 'changeTime': transformFunc = stateMechine[state2.currentMode][mode]; break;
             case 'liveMode':   transformFunc = stateMechine[state2.currentMode][mode]; break;
+            case 'clickTimeBar':   transformFunc = stateMechine[state2.currentMode][mode]; break;
           }
 
           transformFunc();
@@ -194,25 +211,30 @@ export default {
 
 
         const setCurrentTimestamp = (timestamp) => {
-          state.datePickerTime = timestamp;
           state.currentTimestamp = timestamp
         }
 
 
         const liveModeClick = () => {
-            state.isLive = !state.isLive
-
             if(state2.currentMode === Mode.Live) {
               transformEvent('liveMode', Mode.Default);
-            } 
-            
-            if(state2.currentMode === Mode.Default){
+            } else if(state2.currentMode === Mode.Default){
+              transformEvent('liveMode', Mode.Live);
+            } else if(state2.currentMode === Mode.Auto){
               transformEvent('liveMode', Mode.Live);
             }
         }
 
+        const playAnimationClick = (isPlay) => {
+          if (isPlay) {
+            transformEvent('play', Mode.Auto);
+          } else {
+            transformEvent('play', Mode.Default);
+          }
+        }
+
         const clickTimeBar = () => {
-          toFinishPlay()
+          transformEvent('clickTimeBar', Mode.Default);
         }
 
 
@@ -228,116 +250,47 @@ export default {
           }
         }
 
-        let timer = -1;
-        const delayTime = 1000;
-        const unitTime = props.playIntervalSecond;
 
-        const updateAnimationTime = () => {
-          state.datePickerTime = new Date(state.datePickerTime.valueOf() + unitTime);
-          state.currentTimestamp = state.datePickerTime;
-          TimeBarCanvasRef.value.updateCurrentTimeByTime(state.currentTimestamp.valueOf());
-          emit('animationTimeChange', { time: state.datePickerTime })
-        }
 
-        const playAnimationTick = (multi) => {
-          timer = _setInterval(() => { updateAnimationTime(); }, delayTime / multi)
-        }
 
-        const stopAnimationTick = () => { _clearInterval(timer) }
+      const currentTimeChange = (time) => {
+          state.currentTimestamp = time
+          emit('currentTimeChange', time)
+      }
 
-        const playAnimationClick = ({ isPlay }) => {
-          console.log('playAnimationClick')
-          if (isPlay) {
-            state.mode = MODE.Animation
-          } else {
-            state.mode = MODE.Default
+      /**
+       * 当前时间修改
+       * @param time 
+       */
+      const nowTimeStampChange = (time) => {
+          state.nowTimeStamp = time;
+          if (state2.currentMode === Mode.Live) {
+            state.currentTimestamp = state.nowTimeStamp;
           }
-          emit('playAnimationClick', { isPlay, timestamp: state.datePickerTime.valueOf() })
-        }
-
-      /**
-       * 自动播放
-       */
-      const toAutoPlay = (isPlay) => {
-         state.isAutoPlay = true;
-         cancelLiveMode();
-         if (isPlay) {
-           playAnimationTick(1)
-         } else {
-           stopAnimationTick()
-         }
-       }
-
-      /**
-       * 手动播放
-       */
-      const toManualPlay = () => {
-        state.isAutoPlay = false;
-        cancelLiveMode();
-        stopAnimationTick()
       }
 
-      /**
-       * 结束播放
-       */
-      const toFinishPlay = () => {
-        if(TimeNotControllerRef.value) {
-          if (TimeNotControllerRef.value.isPlay) {
-            TimeNotControllerRef.value.clickPlayHandle()
-          }
-        }
+      onMounted(() => {
+        console.log('TimeLineNot state', state)
+      });
 
-        if(state.isAutoPlay) {
-          toAutoPlay(false)
-        } else {
-          toManualPlay()
-          emit('stopManualPlay', { isPlay: false, timestamp: state.datePickerTime.valueOf() })
-        }
+      const refData = toRefs(state);
+
+      return {
+        ...refData,
+        props,
+        TimeBarCanvasRef,
+        TimeAnimationBarRef,
+        TimeNotControllerRef,
+        liveModeClick,
+        preTimeTickClick,
+        nextTimeTickClick,
+        playAnimationClick,
+        currentTimeChange,
+        clickTimeBar,
+        toAutoPlay,
+        setCurrentTimestamp,
+        nowTimeStampChange
       }
-
-      /**
-       * 自动播放时候 修改时间
-       * @param time
-       */
-      const setManualPlayTime = (time) => {
-        state.datePickerTime = new Date(time);
-        state.currentTimestamp = state.datePickerTime;
-        TimeBarCanvasRef.value.updateCurrentTimeByTime(state.currentTimestamp.valueOf());
-        emit('animationTimeChange', { time: state.datePickerTime })
-      }
-
-
-
-      const currentTimeChange = ({ time }) => {
-        state.datePickerTime = new Date(time)
-          emit('currentTimeChange', {time})
-      }
-
-
-
-        onMounted(() => {
-        });
-
-        const refData = toRefs(state);
-
-        return {
-          ...refData,
-          props,
-          TimeBarCanvasRef,
-          TimeAnimationBarRef,
-          TimeNotControllerRef,
-          liveModeClick,
-          preTimeTickClick,
-          nextTimeTickClick,
-          playAnimationClick,
-          currentTimeChange,
-          clickTimeBar,
-          toAutoPlay,
-          toManualPlay,
-          toFinishPlay,
-          setManualPlayTime,
-          setCurrentTimestamp
-        }
     }
 }
 </script>

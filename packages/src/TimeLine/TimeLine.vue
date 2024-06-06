@@ -54,7 +54,7 @@ import moment from 'moment'
 import TimeController from './TimeController.vue'
 import TimeBarCanvas from './TimeBarCanvas.vue'
 import TimeTickLabel from './TimeTickLable.vue'
-import TimePointer from './TimePointer.vue'
+import TimePointer from './FreePointer.vue'
 import TimeAnimationBar from './TimeAnimationBar.vue'
 import './iconfont/iconfont.css'
 

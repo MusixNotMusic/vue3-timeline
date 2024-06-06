@@ -23,7 +23,7 @@ import moment from "moment";
 import { parseTimeStringToMillisecond, parseTimeStringToObject, carryBitTable, getWholeTimeByUnit } from './utils/parseTime'
 import { CanvasTimeBar } from "./utils/canvasTimeBar";
 import TimeTickLabel from './TimeTickLable.vue'
-import TimePointer from './TimePointer.vue'
+import TimePointer from './FreePointer.vue'
 import NowPointer from './NowPointer.vue'
 
 enum MODE {

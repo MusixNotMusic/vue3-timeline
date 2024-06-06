@@ -1,45 +1,74 @@
 <template>
   <div class="time-pointer-box" :style="timePointerBoxStyle" ref="timePointerBoxRef">
     <div class="time-pointer-wrap" :style="{left: state.offset + 'px'}" ref="timePointerWrapRef">
-      <div class="current-time" ref="currentTimeRef">{{timeFormatText}}</div>
+      <div class="current-time" ref="currentTimeRef">{{state.timeFormatText}}</div>
       <div class="time-pointer" ref="timePointerRef"></div>
     </div>
   </div>
 </template>
-<script lang="ts">
-import { ref, onMounted, reactive, watch, computed } from 'vue'
+<script>
+import { ref, onMounted, reactive, watch, computed } from 'vue';
+import moment from 'moment';
+import { carryBitTable, parseTimeStringToObject } from './utils/parseTime'
 
 export default {
   name: 'TimeTickLabel',
-  emits: ['mousemove', 'mouseup'],
+  emits: ['mousemove', 'mouseup', 'change'],
   props: {
-    offset: {
-      type: [Number, String],
-      default: 0
-    },
-    timeFormatText: {
-      type: String,
-      default: ''
-    },
     timeBarWidth: {
       type: [Number, String],
       default: 0
+    },
+    startTimeStamp: {
+      type: [Number, Date],
+      default: 0
+    },
+    freeTimeStamp: {
+      type: [Number, Date],
+      default: 0
+    },
+    unitTime: {
+      type: [Number, String],
+      default: 0
+    },
+    onePixelTimeUnit: {
+        type: [Number, String],
+        default: '30s'
     }
   },
-  setup (props: any, { emit }) {
+  setup (props, { emit }) {
     const timePointerBoxRef = ref(null)
     const timePointerWrapRef = ref(null)
     const currentTimeRef = ref(null)
     const timePointerRef = ref(null)
 
+    const unitOfObject = parseTimeStringToObject(props.onePixelTimeUnit);
+
     const state = reactive({
-      offset: props.offset,
-      isClick: false
+      timeFormatText: '',
+      offset: 0
     })
 
-    watch(() => props.offset, (val, old) => {
+    const updateOffset = (startTimeStamp, freeTimeStamp) => {
+      state.offset = (freeTimeStamp.valueOf() - startTimeStamp.valueOf()) / props.unitTime;
+      state.timeFormatText = moment(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
+    }
+
+    const updateFreeTimeStamp = (offset) => {
+      const freeTimeStamp = props.startTimeStamp + offset * props.unitTime;
+      state.timeFormatText = moment(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
+      emit('change', freeTimeStamp)
+    }
+
+    watch(() => props.startTimeStamp, (val, old) => {
       if (val !== old) {
-        state.offset = val
+        updateOffset(props.startTimeStamp, props.freeTimeStamp);
+      }
+    })
+
+    watch(() => props.freeTimeStamp, (val, old) => {
+      if (val !== old) {
+        updateOffset(props.startTimeStamp, props.freeTimeStamp);
       }
     })
 
@@ -54,51 +83,28 @@ export default {
       let isClick = false;
 
       let rect = timePointerBoxRef.value.getBoundingClientRect()
-      let rect2 = timePointerWrapRef.value.getBoundingClientRect()
 
       const onMouseMove = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isClick) {
-          state.offset = e.clientX - x - rect.left + rect2.width / 2;
-          emit('mousemove', state.offset)
-        }
-      }
-      const onMouseMove2 = (e) => {
         e.preventDefault();
         e.stopPropagation();
         if (isClick) {
           let offset = e.clientX - x - rect.left
           if (offset >= 0 && offset < props.timeBarWidth) {
             state.offset = offset
-            emit('mousemove', state.offset)
+            updateFreeTimeStamp(offset)
           }
         }
       }
-
-      // if (currentTimeRef.value) {
-      //   currentTimeRef.value.addEventListener('mousedown', function (e) {
-      //     x = e.offsetX
-      //     isClick = true
-      //     document.addEventListener('mousemove', onMouseMove)
-      //   })
-      //
-      //   document.addEventListener('mouseup', function () {
-      //     document.removeEventListener('mousemove', onMouseMove)
-      //     emit('mouseup')
-      //     isClick = false
-      //   })
-      // }
 
       if (timePointerRef.value) {
         timePointerRef.value.addEventListener('mousedown', function (e) {
           x = e.offsetX
           isClick = true
-          document.addEventListener('mousemove', onMouseMove2)
+          document.addEventListener('mousemove', onMouseMove)
         })
 
         document.addEventListener('mouseup', function () {
-          document.removeEventListener('mousemove', onMouseMove2)
+          document.removeEventListener('mousemove', onMouseMove)
           emit('mouseup')
           isClick = false
         })
@@ -111,11 +117,11 @@ export default {
 
     return {
       ...props,
+      state,
       timePointerBoxRef,
       timePointerWrapRef,
       currentTimeRef,
       timePointerRef,
-      state,
       timePointerBoxStyle
     }
   }

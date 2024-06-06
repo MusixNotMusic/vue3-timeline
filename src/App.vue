@@ -9,19 +9,16 @@ const timeLineRef = ref(null)
 
 const datePickerTime = ref(Date.now);
 
-const animationTimeChange = (data) => {
-  console.log('animationTimeChange ==>', data);
-}
-const animationRangeTimeChange = ({ startTime, offsetTime }) => {
-  console.log('animationRangeTimeChange', startTime, offsetTime)
+const autoAnimationTimeStampChange = (data) => {
+  console.log('autoAnimationTimeStampChange ==>', data);
 }
 
 const playAnimationClick = ({ isPlay }) => {
   console.log('playAnimationClick =>', isPlay)
 }
 
-const currentPointerTimeChange = (time) => {
-  console.log('currentPointerTimeChange ==>', time)
+const currentTimeChange = (time) => {
+  console.log('currentTimeChange ==>', time)
 }
 
 const datePickerChange = (time) => {
@@ -54,13 +51,10 @@ window.timeLineRef = timeLineRef
     <div class="time-line-wrap">
       <TimeLineNotController theme="blue"
                 ref="timeLineRef"
-                :playIntervalSecond="6 * 60 * 1000"
+                :playIntervalSecond="3 * 60 * 1000"
                 v-model="datePickerTime"
-                @currentPointerTimeChange="currentPointerTimeChange"
-                @animationTimeChange="animationTimeChange"
-                @animationRangeTimeChange="animationRangeTimeChange"
-                @playAnimationClick="playAnimationClick"
-                @stopManualPlay="stopManualPlay">
+                @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
+                @currentTimeChange="currentTimeChange">
       </TimeLineNotController>
     </div>
   </div>

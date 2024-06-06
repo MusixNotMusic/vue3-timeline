@@ -8,34 +8,41 @@
           <!-- time label list  -->
           <TimeTickLabel :list="timeTickList"></TimeTickLabel>
           <!-- time cursor pointer -->
-          <TimePointer :offset="pointerLeftOffset" :timeFormatText="pointerFormatTimeText" :timeBarWidth="timeBarWidth" @mousemove="timePointerChange"></TimePointer>
+          <FreePointer 
+            :startTimeStamp="startTimeStamp" 
+            :freeTimeStamp="currentTimeStamp" 
+            :timeBarWidth="timeBarWidth"
+            :unitTime="unitOfMs"
+            :onePixelTimeUnit="onePixelTimeUnit"
+            @change="freeTimeStampChange">
+          </FreePointer>
 
-          <NowPointer :unitTime="unitOfMs" :startTimeStamp="startTimeStamp" :timeBarWidth="timeBarWidth" @change="nowPointerChange"></NowPointer>
+          <NowPointer 
+            v-model:value="startTimeStamp" 
+            :timeBarWidth="timeBarWidth" 
+            :unitTime="unitOfMs" 
+            @change="nowTimeStampChange">
+          </NowPointer>
 
           <slot name="animation" :animationProps="state"></slot>
         </div>
     </div>
 </template>
-<script lang="ts">
+<script>
 import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
 import moment from "moment";
 
-import { parseTimeStringToMillisecond, parseTimeStringToObject, carryBitTable, getWholeTimeByUnit } from '../utils/parseTime'
+import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
 import { CanvasTimeBar } from "../utils/canvasTimeBar";
 import TimeTickLabel from '../TimeTickLable.vue'
-import TimePointer from '../TimePointer.vue'
+import FreePointer from '../FreePointer.vue'
 import NowPointer from '../NowPointer.vue'
 
-enum MODE {
-  Default = 'default',
-  Live = 'live',
-  Animation = 'animation'
-}
 
 export default {
     name: "TimeBarCanvasSimple",
-    emits:['modeChange', 'currentTimeChange', 'clickTimeBar'],
-    components: { TimeTickLabel, TimePointer, NowPointer },
+    emits:['clickTimeBar', 'nowTimeStampChange', 'change'],
+    components: { TimeTickLabel, FreePointer, NowPointer },
     props: {
         currentTimeStamp: {
             type: [Date, Number],
@@ -45,10 +52,6 @@ export default {
         onePixelTimeUnit: {
             type: [Number, String],
             default: '30s'
-        },
-        mode: {
-          type: String,
-          default: 'default',  // 'live' | 'animation' | 'default'
         }
     },
     setup(props, { emit }) {
@@ -58,116 +61,83 @@ export default {
       const timeBarCanvasRef = ref(null);
 
       const state = reactive({
-        currentTimeStamp: props.currentTimeStamp,
         startTimeStamp: 0,
         timeTickList: [],
         unitOfMs: parseTimeStringToMillisecond(props.onePixelTimeUnit),
         unitOfObject: parseTimeStringToObject(props.onePixelTimeUnit),
         timeBarWidth: 0,
-        pointerFormatTimeText: '',
-        pointerLeftOffset: 0,
         pointerDisabled: false,
-        MODE: MODE
       });
-
-      const setLiveMode = () => {
-        setRealTime(Date.now())
-      }
-
-      const init = () => {
-        if (timeBarCanvasWrapRef.value) {
-          state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
-          state.startTimeStamp = moment(getWholeTimeByUnit(state.currentTimeStamp.valueOf() - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
-          state.pointerLeftOffset = (state.currentTimeStamp.valueOf() - state.startTimeStamp) / state.unitOfMs
-        }
-        state.pointerFormatTimeText = moment(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime)
-      }
-
-      const setStartTime = (time) => {
-        state.startTimeStamp = moment(getWholeTimeByUnit(time, state.unitOfObject.unit)).valueOf()
-        if (timeBarCanvasWrapRef.value) {
-          state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
-        }
-        if (canvasTimeBar) canvasTimeBar.renderer()
-      }
 
       let canvasTimeBar = null;
 
+      watch(() => props.currentTimeStamp, (val, old) => {
+        if(val !== old) {
+          setStartTimeStamp(props.currentTimeStamp);
+        }
+      })
+
+      /**
+       * 初始化时间轴
+       */
+      const initTimeBar = () => {
+        if (timeBarCanvasWrapRef.value) {
+          state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
+          state.startTimeStamp = moment(getWholeTimeByUnit(props.currentTimeStamp.valueOf() - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
+        }
+      }
+
+      /**
+       * 设置时间条起始时间
+       */
+      const setStartTimeStamp = (time) => {
+        const endTimeStamp = state.startTimeStamp + state.timeBarWidth * state.unitOfMs;
+        if (time < state.startTimeStamp || time > endTimeStamp) {
+          initTimeBar();
+        }
+      }
+
       const addCanvasEventListener = () => {
         canvasTimeBar.on('time-bar-click', ({offset}) => {
-          updateCurrentTimeByOffset(offset)
+          const currentTimeStamp = state.startTimeStamp + offset * state.unitOfMs;
+          emit('change', currentTimeStamp);
           emit('clickTimeBar')
         })
 
         canvasTimeBar.on('time-bar-mousemove', ({movePixel}) => {
-          state.pointerLeftOffset = state.pointerLeftOffset + movePixel
         })
 
         canvasTimeBar.on('time-bar-resize', () => {
           if (timeBarCanvasWrapRef.value) {
-            state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
+            state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth;
           }
         })
       }
 
-      const timePointerChange = (offset) => {
-        updateCurrentTimeByOffset(offset)
+      const freeTimeStampChange = (time) => {
+        emit('change', time);
       }
 
-      const nowPointerChange = ({ offset, needNextPage }) => {
-        if (props.mode === MODE.Live) {
-          updateCurrentTimeByOffset(offset)
-          if (needNextPage) {
-            setStartTime(state.currentTimeStamp.valueOf())
-          }
-        }
-      }
-
-      const updateCurrentTimeByOffset = (offset) => {
-        if (offset > state.timeBarWidth) {
-          setStartTime(state.startTimeStamp + state.unitOfMs * state.timeBarWidth)
-          state.pointerLeftOffset = offset - state.timeBarWidth
-        } else if (offset < 0) {
-          setStartTime(state.startTimeStamp - state.unitOfMs * state.timeBarWidth)
-          state.pointerLeftOffset = state.timeBarWidth + offset
-        } else {
-          state.pointerLeftOffset = offset
-        }
-        state.currentTimeStamp = state.startTimeStamp + state.pointerLeftOffset * state.unitOfMs
-        state.pointerFormatTimeText = moment(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime)
-
-        emit('currentTimeChange', { time: state.currentTimeStamp.valueOf() })
+      const nowTimeStampChange = ({ offset, needNextPage, nowTimeStamp }) => {
+        emit('nowTimeStampChange', nowTimeStamp);
       }
 
       const setRealTime = (time) => {
-        state.pointerLeftOffset = state.timeBarWidth / 2;
-        setStartTime(time - state.unitOfMs * state.pointerLeftOffset);
-        state.currentTimeStamp = time;
-        state.pointerLeftOffset = (time - state.startTimeStamp) / state.unitOfMs;
-        state.pointerFormatTimeText = moment(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime);
-
-        emit('currentTimeChange', { time: state.currentTimeStamp.valueOf() });
-      }
-
-      const updateCurrentTime = (time) => {
-        const timeValue = time.valueOf();
-        const offset = (timeValue - state.startTimeStamp) / state.unitOfMs;
-        updateCurrentTimeByOffset(offset)
       }
 
       const prevTimeTick = () => {
         console.log('prevTimeTick')
-        updateCurrentTimeByOffset(state.pointerLeftOffset - 1)
+        emit('change', props.currentTimeStamp - state.unitOfMs);
       }
 
       const nextTimeTick = () => {
         console.log('nextTimeTick')
-        updateCurrentTimeByOffset(state.pointerLeftOffset + 1)
+        emit('change', props.currentTimeStamp + state.unitOfMs);
       }
 
       onMounted(() => {
         setTimeout(() => {
-          init()
+          initTimeBar()
           canvasTimeBar = new CanvasTimeBar(timeBarCanvasWrapRef.value, timeBarCanvasRef.value, state)
           addCanvasEventListener()
         })
@@ -181,17 +151,17 @@ export default {
 
       return {
         state,
-        props,
         ...refData,
         timeBarWrapRef,
         timeBarCanvasWrapRef,
         timeBarCanvasRef,
-        timePointerChange,
-        nowPointerChange,
+        freeTimeStampChange,
+        nowTimeStampChange,
         prevTimeTick,
         nextTimeTick,
         setRealTime,
-        updateCurrentTime
+        // setLiveMode,
+        // updateCurrentTime
       };
     }
 }

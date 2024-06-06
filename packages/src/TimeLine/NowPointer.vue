@@ -1,5 +1,5 @@
 <template>
-  <div class="now-pointer-box" :style="nowPointerBoxStyle">
+  <div class="now-pointer-box" :style="pointerStyle">
     <div class="now-pointer-wrap" :style="{left: state.offset + 'px'}">
       <span>实况</span>
       <div class="tick-pointer"></div>
@@ -7,7 +7,7 @@
     </div>
   </div>
 </template>
-<script lang="ts">
+<script>
 import { onMounted, onUnmounted, reactive, watch, computed, nextTick } from 'vue'
 import { _setInterval, _clearInterval } from './utils/interval'
 
@@ -19,9 +19,9 @@ export default {
       type: [Number, String],
       default: 0
     },
-    startTimeStamp: {
+    value: {
       type: Number,
-      default: ''
+      default: 0
     },
     timeBarWidth: {
       type: Number,
@@ -29,65 +29,64 @@ export default {
     }
   },
   setup (props, { emit }) {
+    let timer = -1;
     const state = reactive({
       offset: 0,
-      timer: -1,
-      startTimeStamp: props.startTimeStamp,
-      timeBarWidth: props.timeBarWidth,
-      currentTimeStamp: Date.now()
+      currentTimeStamp: -1
     })
 
-    watch(() => props.startTimeStamp, (val, old) => {
+    watch(() => props.value, (val, old) => {
       if (val !== old) {
-        state.startTimeStamp = val
-        getPointerPosition()
+        setPointer()
       }
     })
 
     watch(() => props.timeBarWidth, (val, old) => {
       if (val !== old) {
-        state.timeBarWidth = val
-        getPointerPosition()
+        setPointer()
       }
     })
 
-    const getPointerPosition = () => {
+    /**
+     * 设置指针
+     */
+    const setPointer = () => {
       state.currentTimeStamp = Date.now()
-      state.offset = (state.currentTimeStamp - state.startTimeStamp) / props.unitTime
-      emit('change', { offset: state.offset, needNextPage: state.offset >= props.timeBarWidth - 40 })
+      state.offset = (state.currentTimeStamp - props.value) / props.unitTime
+      emit('change', { offset: state.offset, needNextPage: state.offset >= props.timeBarWidth - 40, nowTimeStamp: state.currentTimeStamp })
     }
 
-    const nowPointerBoxStyle = computed(() => {
+    const pointerStyle = computed(() => {
       return {
         visibility: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'visible' : 'hidden'
       }
     })
 
-    const Ticktock = () => {
+    const runClock = () => {
       nextTick(() => {
         const delayTime = 10 * 1000 || props.unitTime
         // 设置 实况
         setTimeout(() => {
-          state.timer = _setInterval(() => {
-            getPointerPosition();
+          timer = _setInterval(() => {
+              setPointer();
           }, delayTime)
         }, delayTime)
       });
     }
 
     onMounted(() => {
-      getPointerPosition()
-      Ticktock()
+      setPointer()
+      runClock()
     })
 
     onUnmounted(() => {
-      _clearInterval(state.timer)
+      _clearInterval(timer)
     })
 
     return {
       ...props,
       state,
-      nowPointerBoxStyle
+      pointerStyle
     }
   }
 }

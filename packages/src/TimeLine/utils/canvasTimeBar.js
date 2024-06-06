@@ -110,7 +110,7 @@ export class CanvasTimeBar extends EventEmitter {
         // 是`鼠标按下`操作
         let isMouseEvent = false
         // 鼠标按下时长
-        let diffTime = 120;
+        let diffTime = 200;
         let mouseDownTime = 0;
         let mouseUpTime = 0;
 

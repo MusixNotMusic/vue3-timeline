@@ -12,34 +12,15 @@
 </template>
 
 <script>
-import { onMounted, reactive, toRefs, watch } from "vue";
+import { onMounted, reactive, toRefs } from "vue";
 
 export default {
     name: "TimeController",
     emits: ["preTimeTickClick", "nextTimeTickClick", "playAnimationClick"],
-    props: {
-      animationTime: {
-          type: [Date, Number],
-          default: Date.now()
-      },
-      offsetTime: {
-        type: Number,
-        default: 2
-      },
-      multipleValue: {
-        type: Number,
-        default: 1
-      }
-    },
     setup(props, { emit }) {
-        const state = reactive({
-            isPlay: false,
-            animationTime: props.animationTime
-        });
-
-      watch(() => props.animationTime, (val, old) => {
-          if (old !== val) state.animation = val
-      })
+      const state = reactive({
+          isPlay: false,
+      });
 
       onMounted(() => {
       });
@@ -47,9 +28,8 @@ export default {
       // 点击播放按钮
       const clickPlayHandle = () => {
           state.isPlay = !state.isPlay;
-          emit('playAnimationClick', { isPlay: state.isPlay })
+          emit('playAnimationClick', state.isPlay)
       };
-
 
       // 上一刻度
       const preTimeTick = () => {
@@ -60,14 +40,23 @@ export default {
           emit('nextTimeTickClick', { value: 1 })
       };
 
+      const setPlayStatus = () => {
+          state.isPlay = true;
+      }
+
+      const setStopStatus = () => {
+          state.isPlay = false;
+      }
+
       const refData = toRefs(state);
 
       return {
         ...refData,
-        state,
         clickPlayHandle,
         preTimeTick,
         nextTimeTick,
+        setPlayStatus,
+        setStopStatus
       };
    },
 };
