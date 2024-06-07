@@ -1,6 +1,7 @@
 import TimeLine from './src/TimeLine/TimeLine.vue'
 import TimeBarCanvas from './src/TimeLine/TimeBarCanvas.vue'
 import TimeLineMain from './src/TimeLine/simple/TimeLineMain.vue'
+import './src/TimeLine/iconfont/iconfont.css';
 
 const plugin = {
   install(app) {
