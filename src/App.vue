@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import {ref} from 'vue'
-import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
-// import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
+// import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
+import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
+
+// console.log(Vue3TimelineBar)
+
 import '@cdyw/vue3-timeline-bar/dist/style.css'
 
 const timeLineRef = ref(null)
