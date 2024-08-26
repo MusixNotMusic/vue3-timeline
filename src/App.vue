@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import {ref} from 'vue'
 // import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
 import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
