@@ -1,13 +1,13 @@
 <template>
     <div class="time-control">
-        <span class="cdywIF icon-timeline-zuobian icon-color" @mousedown="preTimeTick($event)" @mouseup="mouseUpClear"></span>
+        <span class="cdywIFTimeLine icon-timeline-zuobian icon-color" @mousedown="preTimeTick($event)" @mouseup="mouseUpClear"></span>
 
         <span
-            class="cdywIF icon-timeline-bofang1 icon-color"
+            class="cdywIFTimeLine icon-timeline-bofang1 icon-color"
             :class="{ 'icon-timeline-bofang1': !isPlay, 'icon-timeline-zanting1': isPlay }"
             @click="clickPlayHandle()" ></span>
 
-        <span class="cdywIF icon-timeline-youbian icon-color" @mousedown="nextTimeTick($event)" @mouseup="mouseUpClear"></span>
+        <span class="cdywIFTimeLine icon-timeline-youbian icon-color" @mousedown="nextTimeTick($event)" @mouseup="mouseUpClear"></span>
     </div>
 </template>
 

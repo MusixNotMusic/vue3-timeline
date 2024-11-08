@@ -84,7 +84,7 @@ const datePickerChange = (time) => {
   <div class="time-line-bar">
     <el-date-picker
           v-model="datePickerTime"
-          prefix-icon="cdywIF icon-timeline-rili2"
+          prefix-icon="cdywIFTimeLine icon-timeline-rili2"
           ref="datePickerRef"
           type="datetime"
           :editable="true"

@@ -1,29 +1,29 @@
 <template>
     <div class="time-control">
-        <span class="cdywIF icon-timeline-zuobian icon-color" @click="preTimeTick"></span>
+        <span class="cdywIFTimeLine icon-timeline-zuobian icon-color" @click="preTimeTick"></span>
 
         <span
-            class="cdywIF icon-timeline-bofang1 icon-color"
+            class="cdywIFTimeLine icon-timeline-bofang1 icon-color"
             v-show="!showPlayMode"
             @click="clickPlayModeHandle(true, 470)"
         ></span>
 
         <div class="option-time" v-show="showPlayMode">
             <span
-                class="cdywIF icon-color"
+                class="cdywIFTimeLine icon-color"
                 :class="{ 'icon-timeline-bofang1': !isPlay, 'icon-timeline-zanting1': isPlay }"
                 @click="clickPlayHandle"
             ></span>
 
             <span
-                class="cdywIF icon-timeline-24gf-stop icon-stop"
+                class="cdywIFTimeLine icon-timeline-24gf-stop icon-stop"
                 @click="clickPlayModeHandle(false, 500)"
             ></span>
 
             <div class="rotation-multiple">
                 <div class="rotation-text" @click="showMultipleBox('multipleDom')">
                     {{ curMultipleItem.name }}
-                    <span class="cdywIF icon-timeline-shang"></span>
+                    <span class="cdywIFTimeLine icon-timeline-shang"></span>
                 </div>
 
                 <div class="rotation-option rotation-option-1" ref="RotationOption1Ref">
@@ -33,7 +33,7 @@
                 </div>
             </div>
 
-            <span class="cdywIF icon-timeline-cunchu"></span>
+            <span class="cdywIFTimeLine icon-timeline-cunchu"></span>
 
             <div class="date-time-choose">
                 <el-date-picker
@@ -48,7 +48,7 @@
             <div class="rotation-multiple rotation-multiple-timeHour">
                 <div class="rotation-text" @click="showMultipleBox('multipleDom2')">
                     {{ offsetTimeItem.name }}
-                    <span class="cdywIF icon-timeline-shang"></span>
+                    <span class="cdywIFTimeLine icon-timeline-shang"></span>
                 </div>
 
                 <div class="rotation-option rotation-option-2" ref="RotationOption2Ref">
@@ -59,7 +59,7 @@
             </div>
         </div>
 
-        <span class="cdywIF icon-timeline-youbian icon-color" @click="nextTimeTick"></span>
+        <span class="cdywIFTimeLine icon-timeline-youbian icon-color" @click="nextTimeTick"></span>
     </div>
 </template>
 
