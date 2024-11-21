@@ -33,7 +33,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cdyw/vue3-timeline-bar": "^1.0.10",
+    "@cdyw/vue3-timeline-bar": "^1.0.14",
     "element-plus": "^1.1.0-beta.24",
     "events": "^3.3.0",
     "jquery": "^3.6.0",

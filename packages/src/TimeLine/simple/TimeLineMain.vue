@@ -32,6 +32,7 @@ import TimeBarCanvasSimple from './TimeBarCanvasSimple.vue'
 import TimeTickLabel from '../TimeTickLable.vue'
 import TimePointer from '../FreePointer.vue'
 import { _setInterval, _clearInterval } from '../utils/interval'
+import { parseTimeStringToMillisecond } from '../utils/parseTime'
 import '../iconfont/iconfont.css'
 
 enum Mode {
@@ -76,11 +77,10 @@ export default {
           defalt: 'auto'
         }
     },
-    setup (props: any, { emit }) {
+    setup (props, { emit }) {
         const TimeBarCanvasRef = ref(null)
         const TimeAnimationBarRef = ref(null)
         const TimeNotControllerRef = ref(null)
-
 
         const state: any = reactive({
           isLive: false,
@@ -293,12 +293,16 @@ export default {
 
         const preTimeTickClick = (rate) => {
           if (TimeBarCanvasRef.value) {
-            TimeBarCanvasRef.value.prevTimeTick(rate)
+            const k = props.stepSecond / parseTimeStringToMillisecond(props.onePixelTimeUnit);
+            rate.value = rate.value * k;
+            TimeBarCanvasRef.value.prevTimeTick(rate);
           }
         }
 
         const nextTimeTickClick = (rate) => {
           if (TimeBarCanvasRef.value) {
+            const k = props.stepSecond / parseTimeStringToMillisecond(props.onePixelTimeUnit);
+            rate.value = rate.value * k;
             TimeBarCanvasRef.value.nextTimeTick(rate)
           }
         }

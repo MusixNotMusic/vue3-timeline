@@ -27,7 +27,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // 把不想打包进你的包的包排除掉
-      external: ["vue", "element-plus"],
+      external: ["vue", "element-plus", "events", "moment"],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
