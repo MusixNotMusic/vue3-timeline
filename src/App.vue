@@ -1,8 +1,7 @@
 <script setup>
 import {ref} from 'vue'
-// import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
-import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
-
+import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
+// import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
 
 import '@cdyw/vue3-timeline-bar/dist/style.css'
 
@@ -53,7 +52,7 @@ const datePickerChange = (time) => {
   <div class="time-line-bar">
     <el-date-picker
           v-model="datePickerTime"
-          prefix-icon="cdywIF icon-timeline-rili2"
+          prefix-icon="cdywIFTimeLine"
           ref="datePickerRef"
           type="datetime"
           :editable="true"
