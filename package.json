@@ -2,7 +2,7 @@
   "name": "@cdyw/vue3-timeline-bar",
   "author": "MusixNotMusic<https://github.com/MusixNotMusic>",
   "private": false,
-  "version": "1.0.17",
+  "version": "1.0.18",
   "main": "dist/vue3-timeline-bar.umd.js",
   "module": "dist/vue3-timeline-bar.es.js",
   "exports": {
@@ -10,7 +10,7 @@
     ".": {
       "import": "./dist/@cdyw/vue3-timeline-bar.es.js",
       "require": "./dist/@cdyw/vue3-timeline-bar.umd.js",
-      "type": "./dist/vue3-timeline-bar.d.ts"
+      "types": "./dist/vue3-timeline-bar.d.ts"
     }
   },
   "type": "module",
