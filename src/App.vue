@@ -11,18 +11,18 @@ const datePickerTime = ref(new Date());
 
 const autoAnimationTimeStampChange = (data) => {
   console.log('autoAnimationTimeStampChange ==>', data);
+  console.log('datePickerTime ==>', datePickerTime.value.valueOf());
 }
 
 let timer = -1;
 const manualAnimationTimeStampChange = (controller) => {
   console.log('manualAnimationTimeStampChange ==>', controller);
+  console.log('datePickerTime ==>', datePickerTime.value.valueOf());
   let timestamp = controller.currentTimestamp.valueOf();
   timer = setInterval(() => {
     timestamp = timestamp + 60 * 1000;
     console.log('timestamp ==>', timestamp);
     controller.nextTick(timestamp);
-
-    datePickerTime.value = new Date(timestamp);
   }, 1000)
   controller.stop = () => {
     clearInterval(timer);
@@ -32,7 +32,7 @@ const manualAnimationTimeStampChange = (controller) => {
 
 const currentTimeChange = (time) => {
   console.log('currentTimeChange ==>', time);
-  datePickerTime.value = new Date(time.valueOf());
+  console.log('datePickerTime ==>', datePickerTime.value.valueOf());
 }
 
 const datePickerChange = (time) => {
@@ -65,7 +65,7 @@ const datePickerChange = (time) => {
                 ref="timeLineRef"
                 :stepSecond="3 * 60 * 1000"
                 :playMode="'auto'"
-                v-model:value="datePickerTime"
+                v-model="datePickerTime"
                 @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
                 @manualAnimationTimeStampChange="manualAnimationTimeStampChange"
                 @currentTimeChange="currentTimeChange">
@@ -75,19 +75,6 @@ const datePickerChange = (time) => {
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
-
 .time-line-bar {
   display: flex;
   position: relative;

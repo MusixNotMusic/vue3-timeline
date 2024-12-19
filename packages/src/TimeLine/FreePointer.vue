@@ -47,7 +47,7 @@ export default {
     const state = reactive({
       timeFormatText: '',
       offset: 0,
-      isTransition: true
+      isTransition: false
     })
 
     const updateOffset = (startTimeStamp, freeTimeStamp) => {
@@ -75,7 +75,9 @@ export default {
 
     const timePointerBoxStyle = computed(() => {
       return {
-        visibility: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'visible' : 'hidden'
+        visibility: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'visible' : 'hidden',
+        overflow: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'unset' : 'hidden',
+        // display: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'flex' : 'none',
       }
     })
 
@@ -102,7 +104,7 @@ export default {
           x = e.offsetX
           isClick = true
           document.addEventListener('mousemove', onMouseMove)
-          state.isTransition = false;
+          // state.isTransition = false;
         })
 
         document.addEventListener('mouseup', function () {
@@ -111,7 +113,7 @@ export default {
             updateFreeTimeStamp(state.offset, true)
           }
           isClick = false
-          state.isTransition = true;
+          // state.isTransition = true;
         })
       }
     }
@@ -198,7 +200,7 @@ export default {
 }
 
 .transitionLeft {
-  transition: left 0.5s 0.1s;
+  transition: left 0.1s 0.01s;
   transition-timing-function: ease, step-start, cubic-bezier(0.1, 0.7, 1, 0.1);
 }
 </style>

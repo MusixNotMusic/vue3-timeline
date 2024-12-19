@@ -48,6 +48,7 @@ export default {
       'autoAnimationTimeStampChange',
       'manualAnimationTimeStampChange',
       'currentTimeChange',
+      'update:modelValue'
     ],
     components: {
       TimeNotController,
@@ -60,9 +61,9 @@ export default {
           type: String,
           default: 'default'
         },
-        value: {
+        modelValue: {
           type: [Date, Number],
-          default: Date.now()
+          require: true
         },
         onePixelTimeUnit: {
           type: [Number, String],
@@ -86,7 +87,7 @@ export default {
           isLive: false,
           isPlay: false,
           isAutoPlay: false,
-          currentTimestamp: props.value.valueOf(),
+          currentTimestamp: props.modelValue.valueOf(),
           nowTimeStamp: 0,
           currentMode: Mode.Default,
           transformMode: Mode.Default
@@ -101,8 +102,7 @@ export default {
           }
         })
 
-
-        watch(() =>props.value, (val, old) => {
+        watch(() =>props.modelValue, (val, old) => {
           if (val.valueOf() !== old.valueOf()) {
             currentTimeChange(val);
           }
@@ -130,6 +130,7 @@ export default {
           timer = _setInterval(() => { 
             state.currentTimestamp = state.currentTimestamp.valueOf() + props.stepSecond;
             emit('autoAnimationTimeStampChange', state.currentTimestamp);
+            emit('update:modelValue', state.currentTimestamp);
           }, delayTime)
         }
 
@@ -153,6 +154,7 @@ export default {
           };
 
           emit('manualAnimationTimeStampChange', manualController);
+          emit('update:modelValue', state.currentTimestamp);
         }
 
         const toManualStop = () => {
@@ -312,6 +314,7 @@ export default {
         if (state.currentTimestamp.valueOf() !== time.valueOf()) {
           state.currentTimestamp = time
           emit('currentTimeChange', time)
+          emit('update:modelValue', time)
         }
       }
 
@@ -323,6 +326,7 @@ export default {
           state.nowTimeStamp = time;
           if (state.currentMode === Mode.Live) {
             state.currentTimestamp = state.nowTimeStamp;
+            emit('update:modelValue', time)
           }
       }
 

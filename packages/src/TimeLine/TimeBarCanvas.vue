@@ -210,6 +210,7 @@ export default {
   display: flex;
   align-items: center;
   padding: 0px 20px;
+  overflow: hidden;
 
   .time-bar-box {
     width: 100%;
