@@ -2,7 +2,7 @@
   "name": "@cdyw/vue3-timeline-bar",
   "author": "MusixNotMusic<https://github.com/MusixNotMusic>",
   "private": false,
-  "version": "1.0.21",
+  "version": "1.0.22",
   "main": "dist/vue3-timeline-bar.umd.js",
   "module": "dist/vue3-timeline-bar.es.js",
   "exports": {
@@ -35,10 +35,10 @@
   },
   "dependencies": {
     "@cdyw/vue3-timeline-bar": "^1.0.14",
+    "dayjs": "^1.11.13",
     "element-plus": "^2.9.0",
     "events": "^3.3.0",
     "jquery": "^3.6.0",
-    "moment": "^2.29.4",
     "sass": "^1.77.4",
     "vue": "^3.2.45"
   },
