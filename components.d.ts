@@ -10,5 +10,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
+    ElInput: typeof import('element-plus/es')['ElInput']
   }
 }

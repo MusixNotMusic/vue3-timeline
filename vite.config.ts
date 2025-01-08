@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite'
-import dts from 'vite-plugin-dts';
 import AutoImport from "unplugin-auto-import/vite";
 import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
@@ -17,8 +16,7 @@ export default defineConfig({
     }),
     Components({
       resolvers: [ElementPlusResolver()],
-    }),
-    dts()
+    })
   ],
   build: {
     emptyOutDir: false, // 避免dist被清空
@@ -29,13 +27,13 @@ export default defineConfig({
     },
     rollupOptions: {
       // 把不想打包进你的包的包排除掉
-      external: ["vue", "element-plus", "events", "moment"],
+      external: ["vue", "element-plus", "events", "dayjs"],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: "vue",
           "events": "events",
-          "moment": "moment",
+          "dayjs": "dayjs",
           "element-plus": "elementPlus",
         },
       },

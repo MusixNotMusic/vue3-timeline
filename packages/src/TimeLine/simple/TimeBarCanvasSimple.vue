@@ -30,7 +30,7 @@
 </template>
 <script>
 import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
-import moment from "moment";
+import dayjs from "dayjs";
 
 import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
 import { CanvasTimeBar } from "../utils/canvasTimeBar";
@@ -83,7 +83,7 @@ export default {
       const initTimeBar = () => {
         if (timeBarCanvasWrapRef.value) {
           state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
-          state.startTimeStamp = moment(getWholeTimeByUnit(props.currentTimeStamp.valueOf() - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
+          state.startTimeStamp = dayjs(getWholeTimeByUnit(props.currentTimeStamp.valueOf() - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
         }
       }
 

@@ -8,7 +8,7 @@
 </template>
 <script>
 import { ref, onMounted, reactive, watch, computed } from 'vue';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { carryBitTable, parseTimeStringToObject } from './utils/parseTime';
 
 export default {
@@ -52,12 +52,12 @@ export default {
 
     const updateOffset = (startTimeStamp, freeTimeStamp) => {
       state.offset = (freeTimeStamp.valueOf() - startTimeStamp.valueOf()) / props.unitTime;
-      state.timeFormatText = moment(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
+      state.timeFormatText = dayjs(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
     }
 
     const updateFreeTimeStamp = (offset, done) => {
       const freeTimeStamp = Math.ceil(props.startTimeStamp + offset * props.unitTime);
-      state.timeFormatText = moment(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
+      state.timeFormatText = dayjs(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
       done && emit('change', freeTimeStamp)
     }
 
@@ -91,9 +91,9 @@ export default {
         e.preventDefault();
         e.stopPropagation();
         if (isClick) {
-          let offset = e.clientX - x - rect.left
+          let offset = e.clientX - x - rect.left - 12;
           if (offset >= 0 && offset < props.timeBarWidth) {
-            state.offset = offset
+            state.offset = offset;
             updateFreeTimeStamp(offset)
           }
         }
@@ -151,8 +151,8 @@ export default {
     .time-pointer {
       width: 12px;
       height: 12px;
-      top: 6px;
-      left: 0px;
+      top: 5px;
+      left: 1px;
       background-color: var(--theme-bg-active);
       cursor: pointer;
       z-index: 30;
@@ -164,7 +164,7 @@ export default {
         position: absolute;
         display: inline-block;
         border: 6px solid var(--theme-bg-active);
-        top: -12px;
+        top: -11px;
         width: 0px;
         height: 0px;
         border-top-color: transparent;
@@ -176,6 +176,7 @@ export default {
 
     .current-time {
       height: 18px;
+      line-height: 18px;
       text-align: center;
       top: 0px;
       left: 0px;

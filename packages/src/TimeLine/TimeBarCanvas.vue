@@ -18,7 +18,7 @@
 </template>
 <script lang="ts">
 import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
-import moment from "moment";
+import dayjs from "dayjs";
 
 import { parseTimeStringToMillisecond, parseTimeStringToObject, carryBitTable, getWholeTimeByUnit } from './utils/parseTime'
 import { CanvasTimeBar } from "./utils/canvasTimeBar";
@@ -87,14 +87,14 @@ export default {
       const init = () => {
         if (timeBarCanvasWrapRef.value) {
           state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
-          state.startTimeStamp = moment(getWholeTimeByUnit(state.currentTimeStamp - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
+          state.startTimeStamp = dayjs(getWholeTimeByUnit(state.currentTimeStamp - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
           state.pointerLeftOffset = (state.currentTimeStamp - state.startTimeStamp) / state.unitOfMs
         }
-        state.pointerFormatTimeText = moment(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime)
+        state.pointerFormatTimeText = dayjs(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime)
       }
 
       const setStartTime = (time) => {
-        state.startTimeStamp = moment(getWholeTimeByUnit(time, state.unitOfObject.unit)).valueOf()
+        state.startTimeStamp = dayjs(getWholeTimeByUnit(time, state.unitOfObject.unit)).valueOf()
         if (timeBarCanvasWrapRef.value) {
           state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
         }
@@ -148,7 +148,7 @@ export default {
           state.pointerLeftOffset = offset
         }
         state.currentTimeStamp = state.startTimeStamp + state.pointerLeftOffset * state.unitOfMs
-        state.pointerFormatTimeText = moment(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime)
+        state.pointerFormatTimeText = dayjs(state.currentTimeStamp).format(carryBitTable[state.unitOfObject.unit].formatTime)
         emit('currentTimeChange', { time: state.currentTimeStamp })
       }
 

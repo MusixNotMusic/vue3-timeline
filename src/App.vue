@@ -1,12 +1,14 @@
 <script setup>
-import {ref} from 'vue'
+import { ref, onMounted } from 'vue'
 import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
 // import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
 
 import '@cdyw/vue3-timeline-bar/dist/style.css'
 
-const timeLineRef = ref(null)
 
+const text = ref('music is my life');
+
+const timeLineRef = ref(null)
 const datePickerTime = ref(new Date());
 
 const autoAnimationTimeStampChange = (data) => {
@@ -32,12 +34,18 @@ const manualAnimationTimeStampChange = (controller) => {
 
 const currentTimeChange = (time) => {
   console.log('currentTimeChange ==>', time);
-  console.log('datePickerTime ==>', datePickerTime.value.valueOf());
 }
 
 const datePickerChange = (time) => {
   // console.log('datePickerChange ==>', time)
+  timeLineRef.value.toDefaultStatus()
 };
+
+onMounted(() => {
+  if(timeLineRef.value) {
+    window.timeLineRef = timeLineRef;
+  }
+})
 
 </script>
 
@@ -65,6 +73,7 @@ const datePickerChange = (time) => {
                 ref="timeLineRef"
                 :stepSecond="3 * 60 * 1000"
                 :playMode="'auto'"
+                live
                 v-model="datePickerTime"
                 @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
                 @manualAnimationTimeStampChange="manualAnimationTimeStampChange"
@@ -72,6 +81,8 @@ const datePickerChange = (time) => {
       </TimeLineMain>
     </div>
   </div>
+
+  <el-input v-model="text" type="textarea" style="width: 400px;"></el-input>
 </template>
 
 <style scoped>

@@ -1,4 +1,4 @@
-import moment from "moment";
+import dayjs from "dayjs";
 import { carryBitTable } from './parseTime'
 import { EventEmitter } from "events";
 
@@ -93,8 +93,8 @@ export class CanvasTimeBar extends EventEmitter {
         ctx.translate(0.5, 0.5)
 
         for (let x = 0; x < canvasWidth; x++) {
-            const timestamp = moment(state.startTimeStamp + x * state.unitOfMs).valueOf()
-            const formatTimeStr = moment(state.startTimeStamp + x * state.unitOfMs).format(formatTime)
+            const timestamp = dayjs(state.startTimeStamp + x * state.unitOfMs).valueOf()
+            const formatTimeStr = dayjs(state.startTimeStamp + x * state.unitOfMs).format(formatTime)
             drawTick(ctx, timestamp, formatTimeStr, x, scale)
         }
     }
@@ -184,7 +184,7 @@ export class CanvasTimeBar extends EventEmitter {
             this.renderer()
         }
 
-        window.addEventListener('mousedown', mousedown)
+        canvas.addEventListener('mousedown', mousedown)
         // canvas.addEventListener('mousemove', mousemove)
         window.addEventListener('mouseup', mouseup)
         // window.addEventListener('mouseleave', mouseleave)

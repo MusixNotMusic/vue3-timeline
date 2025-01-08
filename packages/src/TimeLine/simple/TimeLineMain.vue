@@ -75,8 +75,9 @@ export default {
         },
         playMode: {
           type: String,
-          defalt: 'auto'
-        }
+          default: 'auto'
+        },
+        live: Boolean
     },
     setup (props, { emit }) {
         const TimeBarCanvasRef = ref(null)
@@ -87,7 +88,7 @@ export default {
           isLive: false,
           isPlay: false,
           isAutoPlay: false,
-          currentTimestamp: props.modelValue.valueOf(),
+          currentTimestamp: props.modelValue?.valueOf(),
           nowTimeStamp: 0,
           currentMode: Mode.Default,
           transformMode: Mode.Default
@@ -103,7 +104,7 @@ export default {
         })
 
         watch(() =>props.modelValue, (val, old) => {
-          if (val.valueOf() !== old.valueOf()) {
+          if (val && old && val.valueOf() !== old.valueOf()) {
             currentTimeChange(val);
           }
         })
@@ -158,7 +159,9 @@ export default {
         }
 
         const toManualStop = () => {
-          manualController.stop();
+          if (manualController.stop) {
+            manualController.stop();
+          }
         }
 
         const default2live = () => { 
@@ -312,9 +315,9 @@ export default {
 
       const currentTimeChange = (time) => {
         if (state.currentTimestamp.valueOf() !== time.valueOf()) {
-          state.currentTimestamp = time
-          emit('currentTimeChange', time)
-          emit('update:modelValue', time)
+          state.currentTimestamp = time;
+          emit('currentTimeChange', time);
+          emit('update:modelValue', time);
         }
       }
 
@@ -326,12 +329,20 @@ export default {
           state.nowTimeStamp = time;
           if (state.currentMode === Mode.Live) {
             state.currentTimestamp = state.nowTimeStamp;
-            emit('update:modelValue', time)
+            emit('currentTimeChange', time);
+            emit('update:modelValue', time);
           }
       }
 
+      const toDefaultStatus = () => {
+        clickTimeBar();
+      }
+
       onMounted(() => {
-        console.log('TimeLineNot state', state)
+        console.log('TimeLineNot state', state, props.live)
+        if (props.live) {
+          liveModeClick();
+        }
       });
 
       const refData = toRefs(state);
@@ -348,7 +359,8 @@ export default {
         playAnimationClick,
         currentTimeChange,
         clickTimeBar,
-        nowTimeStampChange
+        nowTimeStampChange,
+        toDefaultStatus,
       }
     }
 }

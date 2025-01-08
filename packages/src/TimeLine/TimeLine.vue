@@ -49,7 +49,7 @@
 </template>
 <script lang="ts">
 import {onBeforeMount, reactive, toRefs, ref} from 'vue'
-import moment from 'moment'
+import dayjs from 'dayjs'
 
 import TimeController from './TimeController.vue'
 import TimeBarCanvas from './TimeBarCanvas.vue'
@@ -117,7 +117,7 @@ export default {
         };
 
         const disabledDate = (time) => {
-            return time.getTime() > moment().valueOf();
+            return time.getTime() > dayjs().valueOf();
         };
 
         const liveModeClick = () => {

@@ -1,4 +1,4 @@
-import moment from 'moment'
+import dayjs from 'dayjs'
 /**
  * 匹配 秒  s
  *     分钟 m/M
@@ -62,16 +62,16 @@ export function parseTimeStringToMillisecond (strTime) {
 
 export function getValueByUnit(timestamp, unit) {
     switch (unit) {
-        case 's': return moment(timestamp).second(); break
-        case 'm': return moment(timestamp).minute(); break
-        case 'M': return moment(timestamp).minute(); break
-        case 'h': return moment(timestamp).hour(); break
-        case 'H': return moment(timestamp).hour(); break
-        case 'd': return moment(timestamp).day(); break
-        case 'D': return moment(timestamp).day(); break
+        case 's': return dayjs(timestamp).second(); break
+        case 'm': return dayjs(timestamp).minute(); break
+        case 'M': return dayjs(timestamp).minute(); break
+        case 'h': return dayjs(timestamp).hour(); break
+        case 'H': return dayjs(timestamp).hour(); break
+        case 'd': return dayjs(timestamp).day(); break
+        case 'D': return dayjs(timestamp).day(); break
     }
 }
 
 export function getWholeTimeByUnit(timestamp, unit) {
-   return moment(timestamp).startOf(carryBitTable[unit].unit)
+   return dayjs(timestamp).startOf(carryBitTable[unit].unit)
 }
