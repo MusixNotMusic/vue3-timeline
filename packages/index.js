@@ -1,6 +1,7 @@
 import TimeBarCanvas from './src/TimeLine/TimeBarCanvas.vue'
 import TimeBarCanvasSimple from './src/TimeLine/simple/TimeBarCanvasSimple.vue'
 import TimeLineMain from './src/TimeLine/simple/TimeLineMain.vue'
+import TimeLineSimpleMain from './src/TimeLine/simple/TimeLineSimpleMain.vue'
 
 const plugin = {
   install(app) {
@@ -10,4 +11,4 @@ const plugin = {
   }
 }
 
-export { TimeBarCanvas, TimeLineMain, TimeBarCanvasSimple, plugin }
+export { TimeBarCanvas, TimeLineMain, TimeBarCanvasSimple, TimeLineSimpleMain, plugin }

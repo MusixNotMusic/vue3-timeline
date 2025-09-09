@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
-// import { TimeLineMain } from '@cdyw/vue3-timeline-bar'
+import TimeLineSimpleMain from '../packages/src/TimeLine/simple/v2/TimeLineSimpleMain.vue'
 
 import '@cdyw/vue3-timeline-bar/dist/style.css'
 
@@ -50,13 +50,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
-  </div>
-  <!-- <TimeLine theme="blue"></TimeLine> -->
-  <!-- <TimeLine ref="timeLineRef" theme="blue" @animationTimeChange="animationTimeChange" @animationRangeTimeChange="animationRangeTimeChange" @playAnimationClick="playAnimationClick"></TimeLine> -->
   <div class="time-line-bar">
     <el-date-picker
           v-model="datePickerTime"
@@ -83,6 +76,21 @@ onMounted(() => {
   </div>
 
   <el-input v-model="text" type="textarea" style="width: 400px;"></el-input>
+
+
+  <div class="time-line-bar">
+    <div class="time-line-wrap">
+      <TimeLineSimpleMain theme="blue"
+                ref="timeLineRef"
+                :stepSecond="3 * 60 * 1000"
+                :playMode="'auto'"
+                v-model="datePickerTime"
+                @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
+                @manualAnimationTimeStampChange="manualAnimationTimeStampChange"
+                @currentTimeChange="currentTimeChange">
+      </TimeLineSimpleMain>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -94,5 +102,11 @@ onMounted(() => {
 .time-line-wrap {
   position: relative;
   width: 100%;
+  height: 60px;
+}
+
+.time-line-bar-2 {
+  display: flex;
+  position: relative;
 }
 </style>

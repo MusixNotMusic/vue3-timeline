@@ -32,11 +32,11 @@
 import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
 import dayjs from "dayjs";
 
-import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
-import { CanvasTimeBar } from "../utils/canvasTimeBar";
-import TimeTickLabel from '../TimeTickLable.vue'
-import FreePointer from '../FreePointer.vue'
-import NowPointer from '../NowPointer.vue'
+import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../../utils/parseTime'
+import { CanvasTimeBar } from "../../utils/canvasTimeBar";
+import TimeTickLabel from './TimeTickLable.vue'
+import FreePointer from './FreePointer.vue'
+import NowPointer from './NowPointer.vue'
 
 
 export default {
@@ -181,9 +181,10 @@ export default {
 
     .time-bar-canvas-wrap {
       width: 100%;
-      height: 18px;
+      height: 15px;
       canvas {
-        background: white;
+        // background: rgba(255, 255, 255, 0.5);
+        background: rgba(0, 0, 0, 0.2);
       }
     }
   }

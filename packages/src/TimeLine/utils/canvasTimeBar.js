@@ -46,7 +46,7 @@ export class CanvasTimeBar extends EventEmitter {
             const ctx = canvas.getContext('2d')
             ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
-            this.drawBackground(ctx)
+            // this.drawBackground(ctx)
             this.drawTimeAxis(ctx)
         }
     }
