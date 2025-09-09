@@ -25,7 +25,7 @@
     </div>
 </template>
 <script lang="ts">
-import { onMounted, reactive, toRefs, ref, watch } from 'vue'
+import { onMounted, onUnmounted, reactive, toRefs, ref, watch } from 'vue'
 
 import TimeNotController from './TimeNotController.vue'
 import TimeBarCanvasSimple from './TimeBarCanvasSimple.vue'
@@ -338,12 +338,42 @@ export default {
         clickTimeBar();
       }
 
+      const keyDownHandler = (event) => { 
+        const key = event.key || event.keyCode; // 优先使用 event.key，回退到 event.keyCode
+        if (key === 'ArrowLeft' || key === 37) {
+          preTimeTickClick({ value: -1 })
+        } else if (key === 'ArrowRight' || key === 39) {
+          nextTimeTickClick({ value: 1 })
+        } else if (key === 'ArrowUp' || key === 38) {
+          liveModeClick();
+        } else if (key === 'ArrowDown' || key === 40) { 
+          toDefaultStatus();
+        }
+
+      }
+
+      const addEventListener = () => { 
+        document.addEventListener('keydown', keyDownHandler);
+      }
+
+      const removeEventListener = () => { 
+        document.removeEventListener('keydown', keyDownHandler);
+      }
+
+
       onMounted(() => {
         console.log('TimeLineNot state', state, props.live)
         if (props.live) {
           liveModeClick();
         }
+
+        addEventListener();
       });
+
+      onUnmounted(() => {
+        removeEventListener();
+      });
+
 
       const refData = toRefs(state);
 

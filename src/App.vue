@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
-import TimeLineSimpleMain from '../packages/src/TimeLine/simple/v2/TimeLineSimpleMain.vue'
+import TimeLineSimpleMain from '../packages/src/TimeLine/v2/TimeLineSimpleMain.vue'
 
 import '@cdyw/vue3-timeline-bar/dist/style.css'
 
@@ -50,7 +50,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="time-line-bar">
+  <!-- <div class="time-line-bar">
     <el-date-picker
           v-model="datePickerTime"
           prefix-icon="cdywIFTimeLine"
@@ -73,7 +73,7 @@ onMounted(() => {
                 @currentTimeChange="currentTimeChange">
       </TimeLineMain>
     </div>
-  </div>
+  </div> -->
 
   <el-input v-model="text" type="textarea" style="width: 400px;"></el-input>
 

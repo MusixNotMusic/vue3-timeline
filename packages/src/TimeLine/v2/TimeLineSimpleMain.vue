@@ -10,6 +10,10 @@
 
         <slot name="TimeBarControlDashboard"></slot>
 
+        <div class="live-btn"
+            :class="{ 'btn-down': isLive, 'btn-up': !isLive }"
+            @click="liveModeClick"> 实况 </div>
+
         <TimeBarCanvasSimple
             ref="TimeBarCanvasRef"
             :onePixelTimeUnit="props.onePixelTimeUnit"
@@ -21,15 +25,16 @@
     </div>
 </template>
 <script lang="ts">
-import { onMounted, reactive, toRefs, ref, watch } from 'vue'
+import { onMounted, reactive, toRefs, ref, watch, onUnmounted } from 'vue'
+import dayjs from 'dayjs'
 
-import TimeNotController from '../TimeNotController.vue'
+import TimeNotController from '../simple/TimeNotController.vue'
 import TimeBarCanvasSimple from './TimeBarCanvasSimple.vue'
-import TimeTickLabel from '../../TimeTickLable.vue'
+import TimeTickLabel from '../TimeTickLable.vue'
 import TimePointer from './FreePointer.vue'
-import { _setInterval, _clearInterval } from '../../utils/interval'
-import { parseTimeStringToMillisecond } from '../../utils/parseTime'
-import '../../iconfont/iconfont.css'
+import { _setInterval, _clearInterval } from '../utils/interval'
+import { parseTimeStringToMillisecond } from '../utils/parseTime'
+import '../iconfont/iconfont.css'
 
 enum Mode {
   Default,
@@ -334,11 +339,59 @@ export default {
         clickTimeBar();
       }
 
+      const keyDownHandler = (event) => { 
+        const key = event.key || event.keyCode; // 优先使用 event.key，回退到 event.keyCode
+        if (key === 'ArrowLeft' || key === 37) {
+            const now = dayjs();
+            const mintuns = now.minute();
+            const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
+            const currentTimestamp = dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
+            if (currentTimestamp <= halfTimestamp) {
+              preTimeTickClick({ value: -1 })
+            } else {
+              preTimeTickClick({ value: -10 })
+            }
+        } else if (key === 'ArrowRight' || key === 39) {
+            const now = dayjs();
+            const mintuns = now.minute();
+            const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
+            if (state.currentTimestamp.valueOf() < halfTimestamp) {
+              const diff = halfTimestamp - dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
+              if (diff < props.stepSecond) {
+                setTimeout(() => {
+                  currentTimeChange(halfTimestamp);
+                })
+              } else {
+                preTimeTickClick({ value: 1 })
+              }
+            } else {
+              preTimeTickClick({ value: 10 })
+            }
+        } else if (key === 'ArrowUp' || key === 38) {
+          liveModeClick();
+        }
+      }
+
+      const addEventListener = () => { 
+        document.addEventListener('keydown', keyDownHandler);
+      }
+
+      const removeEventListener = () => { 
+        document.removeEventListener('keydown', keyDownHandler);
+      }
+
+
       onMounted(() => {
         console.log('TimeLineNot state', state, props.live)
         if (props.live) {
           liveModeClick();
         }
+
+        addEventListener();
+      });
+
+      onUnmounted(() => {
+        removeEventListener();
       });
 
       const refData = toRefs(state);
@@ -362,13 +415,13 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-@import '../../theme/default';
-@import '../../theme/blue';
+@import '../theme/default';
+@import '../theme/blue';
 
 .time-line {
       display: flex;
       align-items: center;
-      // background: var(--theme-bg);
+      background: var(--theme-bg);
 
       position: absolute;
       left: 0;

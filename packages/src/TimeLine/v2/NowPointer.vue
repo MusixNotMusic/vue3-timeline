@@ -1,16 +1,15 @@
 <template>
   <div class="now-pointer-box" :style="pointerStyle">
     <div class="now-pointer-wrap" :style="{left: state.offset + 'px'}">
-      <!-- <span>实况</span>
+      <span>实况</span>
       <div class="tick-pointer"></div>
-      <span>预报</span> -->
-      <div class="now-dot" :title="state.currentTimeStamp"></div>
+      <span>预报</span>
     </div>
   </div>
 </template>
 <script>
 import { onMounted, onUnmounted, reactive, watch, computed, nextTick } from 'vue'
-import { _setInterval, _clearInterval } from '../../utils/interval'
+import { _setInterval, _clearInterval } from '../utils/interval'
 
 export default {
   name: 'TimeTickLabel',
@@ -100,13 +99,6 @@ export default {
   position: absolute;
   top: 0px;
   pointer-events: none;
-
-  .now-dot {
-    width: 5px;
-    height: 5px;
-    background-color: var(--text-now-dot-color);
-    border-radius: 50%;
-  }
   .now-pointer-wrap {
     position: absolute;
     display: flex;
@@ -114,8 +106,7 @@ export default {
     transform: translate(-50%);
     column-gap: 5px;
     span {
-      // color: var(--text-color);
-      color: var(--text-tick-color);
+      color: var(--text-color);
       font-size: 12px;
       display: inline-block;
       margin-top: -17px;

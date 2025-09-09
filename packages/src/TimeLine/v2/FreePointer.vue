@@ -1,20 +1,15 @@
 <template>
   <div class="time-pointer-box" :style="timePointerBoxStyle" ref="timePointerBoxRef">
     <div class="time-pointer-wrap" :class="{transitionLeft: state.isTransition}" :style="{left: state.offset + 'px'}" ref="timePointerWrapRef">
-      <!-- <div class="current-time" ref="currentTimeRef">{{state.timeFormatText}}</div>
-      <div class="time-pointer" ref="timePointerRef"></div> -->
-      <div class="cursor" ref="timePointerRef">
-        <div class="triangle-up"></div>
-        <div class="line"></div>
-        <div class="triangle-d"></div>
-      </div>
+      <div class="current-time" ref="currentTimeRef">{{state.timeFormatText}}</div>
+      <div class="time-pointer" ref="timePointerRef"></div>
     </div>
   </div>
 </template>
 <script>
 import { ref, onMounted, reactive, watch, computed } from 'vue';
 import dayjs from 'dayjs';
-import { carryBitTable, parseTimeStringToObject } from '../../utils/parseTime';
+import { carryBitTable, parseTimeStringToObject } from '../utils/parseTime';
 
 export default {
   name: 'TimeTickLabel',
@@ -153,7 +148,6 @@ export default {
     justify-content: center;
     align-items: center;
     transform: translate(-50%);
-    height: 100%;
     .time-pointer {
       width: 12px;
       height: 12px;
@@ -203,16 +197,6 @@ export default {
     .time-pointer-wrap:hover .current-time {
       opacity: 0.4;
     }
-  }
-}
-
-.cursor {
-  height: 100%;
-  width: 1px;
-  .line {
-    width: 1px;
-    height: 100%;
-    background: red;
   }
 }
 

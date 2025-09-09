@@ -32,8 +32,8 @@
 import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
 import dayjs from "dayjs";
 
-import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../../utils/parseTime'
-import { CanvasTimeBar } from "../../utils/canvasTimeBar";
+import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
+import { CanvasTimeBar } from "../utils/canvasTimeBarV2";
 import TimeTickLabel from './TimeTickLable.vue'
 import FreePointer from './FreePointer.vue'
 import NowPointer from './NowPointer.vue'
@@ -104,12 +104,27 @@ export default {
       const addCanvasEventListener = () => {
         canvasTimeBar.on('time-bar-click', ({offset}) => {
           const currentTimeStamp = Math.ceil(state.startTimeStamp + offset * state.unitOfMs);
-          emit('change', currentTimeStamp.valueOf());
+          const now = dayjs();
+          const mintuns = now.minute();
+          const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
+          if (currentTimeStamp.valueOf() <= halfTimestamp) {
+            emit('change', currentTimeStamp.valueOf());
+          } else {
+            const minute = dayjs(currentTimeStamp).minute();
+            const err = minute % 30 / 30;
+            if (err > 0.8 || err < 0.2) {
+              emit('change', dayjs(currentTimeStamp).set('minute', Math.round(minute / 30) * 30).valueOf());
+            } else {
+              console.log('canvasTimeBar ==>', canvasTimeBar);
+              setTimeout(() => {
+                canvasTimeBar.canvas.style.cursor = 'no-allowed'
+              })
+            }
+          }
           emit('clickTimeBar')
         })
 
-        canvasTimeBar.on('time-bar-mousemove', ({movePixel}) => {
-        })
+      
 
         canvasTimeBar.on('time-bar-resize', () => {
           if (timeBarCanvasWrapRef.value) {
@@ -181,10 +196,9 @@ export default {
 
     .time-bar-canvas-wrap {
       width: 100%;
-      height: 15px;
+      height: 18px;
       canvas {
-        // background: rgba(255, 255, 255, 0.5);
-        background: rgba(0, 0, 0, 0.2);
+        background: white;
       }
     }
   }
