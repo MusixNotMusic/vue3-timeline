@@ -9,7 +9,7 @@
 </template>
 <script>
 import { onMounted, onUnmounted, reactive, watch, computed, nextTick } from 'vue'
-import { _setInterval, _clearInterval } from './utils/interval'
+import { _setInterval, _clearInterval } from '../utils/interval'
 
 export default {
   name: 'TimeTickLabel',

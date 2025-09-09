@@ -34,9 +34,9 @@ import dayjs from "dayjs";
 
 import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
 import { CanvasTimeBar } from "../utils/canvasTimeBar";
-import TimeTickLabel from '../TimeTickLable.vue'
-import FreePointer from '../FreePointer.vue'
-import NowPointer from '../NowPointer.vue'
+import TimeTickLabel from './TimeTickLable.vue'
+import FreePointer from './FreePointer.vue'
+import NowPointer from './NowPointer.vue'
 
 
 export default {

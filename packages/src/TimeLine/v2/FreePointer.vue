@@ -61,6 +61,8 @@ export default {
       done && emit('change', freeTimeStamp)
     }
 
+  
+
     watch(() => props.startTimeStamp, (val, old) => {
       if (val !== old) {
         updateOffset(props.startTimeStamp, props.freeTimeStamp);
@@ -81,6 +83,16 @@ export default {
       }
     })
 
+    const enableMove = (offset) => {
+      const freeTimeStamp = Math.ceil(props.startTimeStamp + offset * props.unitTime);
+      const now = dayjs()
+      const minute = now.minute()
+      const halfMinuteTimestamp = now.set('minute', Math.ceil(minute / 30) * 30).valueOf()
+      // console.log('now < halfMinuteTimestamp', now.valueOf() < halfMinuteTimestamp)
+      // console.log('now < halfMinuteTimestamp', now.valueOf(), halfMinuteTimestamp)
+      return freeTimeStamp <= halfMinuteTimestamp
+    }
+
     const addEventListener = () => {
       let x;
       let isClick = false;
@@ -91,8 +103,8 @@ export default {
         e.preventDefault();
         e.stopPropagation();
         if (isClick) {
-          let offset = e.clientX - x - rect.left - 12;
-          if (offset >= 0 && offset < props.timeBarWidth) {
+          let offset = e.clientX - x - rect.left;
+          if (offset >= 0 && offset < props.timeBarWidth && enableMove(offset)) {
             state.offset = offset;
             updateFreeTimeStamp(offset)
           }

@@ -50,7 +50,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <!-- <div class="time-line-bar">
+  <div class="time-line-bar">
     <el-date-picker
           v-model="datePickerTime"
           prefix-icon="cdywIFTimeLine"
@@ -73,7 +73,7 @@ onMounted(() => {
                 @currentTimeChange="currentTimeChange">
       </TimeLineMain>
     </div>
-  </div> -->
+  </div>
 
   <el-input v-model="text" type="textarea" style="width: 400px;"></el-input>
 

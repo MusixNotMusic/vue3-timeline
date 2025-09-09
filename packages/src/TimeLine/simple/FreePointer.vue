@@ -9,7 +9,7 @@
 <script>
 import { ref, onMounted, reactive, watch, computed } from 'vue';
 import dayjs from 'dayjs';
-import { carryBitTable, parseTimeStringToObject } from './utils/parseTime';
+import { carryBitTable, parseTimeStringToObject } from '../utils/parseTime';
 
 export default {
   name: 'TimeTickLabel',
@@ -91,7 +91,7 @@ export default {
         e.preventDefault();
         e.stopPropagation();
         if (isClick) {
-          let offset = e.clientX - x - rect.left - 12;
+          let offset = e.clientX - x - rect.left;
           if (offset >= 0 && offset < props.timeBarWidth) {
             state.offset = offset;
             updateFreeTimeStamp(offset)

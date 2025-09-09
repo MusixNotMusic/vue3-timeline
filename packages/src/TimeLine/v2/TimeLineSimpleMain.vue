@@ -28,9 +28,9 @@
 import { onMounted, reactive, toRefs, ref, watch, onUnmounted } from 'vue'
 import dayjs from 'dayjs'
 
-import TimeNotController from '../simple/TimeNotController.vue'
+import TimeNotController from './TimeNotController.vue'
 import TimeBarCanvasSimple from './TimeBarCanvasSimple.vue'
-import TimeTickLabel from '../TimeTickLable.vue'
+import TimeTickLabel from './TimeTickLable.vue'
 import TimePointer from './FreePointer.vue'
 import { _setInterval, _clearInterval } from '../utils/interval'
 import { parseTimeStringToMillisecond } from '../utils/parseTime'
@@ -44,7 +44,7 @@ enum Mode {
 };
 
 export default {
-    name: 'TimeLineMain',
+    name: 'TimeLineSimpleMain',
     emit: [
       'autoAnimationTimeStampChange',
       'manualAnimationTimeStampChange',
