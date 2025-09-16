@@ -20,8 +20,10 @@
           <NowPointer 
             v-model:value="startTimeStamp" 
             :timeBarWidth="timeBarWidth" 
-            :unitTime="unitOfMs" 
-            @change="nowTimeStampChange">
+            :unitTime="unitOfMs"
+            @change="nowTimeStampChange"
+            @triggleNow="triggleNow"
+            >
           </NowPointer>
 
           <slot name="animation" :animationProps="state"></slot>
@@ -29,7 +31,7 @@
     </div>
 </template>
 <script>
-import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
+import { onBeforeMount, onMounted, onUnmounted, reactive, ref, shallowRef, toRefs, watch } from "vue";
 import dayjs from "dayjs";
 
 import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
@@ -52,7 +54,8 @@ export default {
         onePixelTimeUnit: {
             type: [Number, String],
             default: '30s'
-        }
+        },
+        forecast: Boolean
     },
     setup(props, { emit }) {
 
@@ -67,6 +70,7 @@ export default {
         unitOfObject: parseTimeStringToObject(props.onePixelTimeUnit),
         timeBarWidth: 0,
         pointerDisabled: false,
+        futureMode: props.forecast
       });
 
       let canvasTimeBar = null;
@@ -74,6 +78,15 @@ export default {
       watch(() => props.currentTimeStamp, (val, old) => {
         if(val !== old) {
           setStartTimeStamp(props.currentTimeStamp);
+        }
+      })
+
+      watch(() => props.forecast, (val, old) => {
+        if (val !== old) {
+          state.futureMode = val;
+          if (canvasTimeBar) {
+            canvasTimeBar.renderer();
+          }
         }
       })
 
@@ -151,6 +164,13 @@ export default {
         emit('change', props.currentTimeStamp + state.unitOfMs * rate.value);
       }
 
+      const triggleNow = () => {
+        console.log('triggleNow')
+        if(canvasTimeBar) {
+          canvasTimeBar.renderer()
+        }
+      }
+
       onMounted(() => {
         setTimeout(() => {
           initTimeBar()
@@ -175,6 +195,7 @@ export default {
         nowTimeStampChange,
         prevTimeTick,
         nextTimeTick,
+        triggleNow
       };
     }
 }

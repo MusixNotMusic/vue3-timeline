@@ -33,8 +33,8 @@ export class CanvasTimeBar extends EventEmitter {
         this.canvasHeight = container.offsetHeight;
 
         if (canvas) {
-            canvas.width = this.canvasWidth * window.devicePixelRatio;
-            canvas.height = this.canvasHeight * window.devicePixelRatio;
+            canvas.width = this.canvasWidth;
+            canvas.height = this.canvasHeight;
             canvas.style.width = canvas.width + 'px';
             canvas.style.height = canvas.height + 'px';
         }

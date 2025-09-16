@@ -12,8 +12,8 @@ import { onMounted, onUnmounted, reactive, watch, computed, nextTick } from 'vue
 import { _setInterval, _clearInterval } from '../utils/interval'
 
 export default {
-  name: 'TimeTickLabel',
-  emits: ['change'],
+  name: 'NowPointer',
+  emits: ['change', 'triggleNow'],
   props: {
     unitTime: {
       type: [Number, String],
@@ -70,6 +70,7 @@ export default {
         setTimeout(() => {
           timer = _setInterval(() => {
               setPointer();
+              emit('triggleNow')
           }, delayTime)
         }, delayTime)
       });

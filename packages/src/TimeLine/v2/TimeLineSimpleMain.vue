@@ -18,6 +18,7 @@
             ref="TimeBarCanvasRef"
             :onePixelTimeUnit="props.onePixelTimeUnit"
             :currentTimeStamp="currentTimestamp"
+            :forecast="forecast"
             @clickTimeBar="clickTimeBar"
             @nowTimeStampChange="nowTimeStampChange"
             @change="currentTimeChange">
@@ -78,12 +79,18 @@ export default {
           type: String,
           default: 'auto'
         },
-        live: Boolean
+        live: Boolean,
+        forecast: Boolean,
     },
     setup (props, { emit }) {
         const TimeBarCanvasRef = ref(null)
         const TimeAnimationBarRef = ref(null)
         const TimeNotControllerRef = ref(null)
+        watch(() =>props.forecast, (val, old) => { 
+          if(val !== old) {
+            state.forecast = val;
+          }
+        })
 
         const state: any = reactive({
           isLive: false,
@@ -92,7 +99,8 @@ export default {
           currentTimestamp: props.modelValue?.valueOf(),
           nowTimeStamp: 0,
           currentMode: Mode.Default,
-          transformMode: Mode.Default
+          transformMode: Mode.Default,
+          forcast: !!props.forcast
         })
 
         watch(() =>props.playMode, (val, old) => {
@@ -347,15 +355,17 @@ export default {
             const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
             const currentTimestamp = dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
             if (currentTimestamp <= halfTimestamp) {
+              if(state.forecast) return;
               preTimeTickClick({ value: -1 })
             } else {
-              preTimeTickClick({ value: -10 })
+              preTimeTickClick({ value: -(30 / (props.stepSecond / 60000)) })
             }
         } else if (key === 'ArrowRight' || key === 39) {
             const now = dayjs();
             const mintuns = now.minute();
             const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
             if (state.currentTimestamp.valueOf() < halfTimestamp) {
+              if(state.forecast) return;
               const diff = halfTimestamp - dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
               if (diff < props.stepSecond) {
                 setTimeout(() => {
@@ -365,9 +375,10 @@ export default {
                 preTimeTickClick({ value: 1 })
               }
             } else {
-              preTimeTickClick({ value: 10 })
+              preTimeTickClick({ value: 30 / (props.stepSecond / 60000) })
             }
         } else if (key === 'ArrowUp' || key === 38) {
+          if(state.forecast) return;
           liveModeClick();
         }
       }

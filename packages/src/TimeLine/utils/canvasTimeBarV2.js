@@ -33,10 +33,11 @@ export class CanvasTimeBar extends EventEmitter {
         this.canvasHeight = container.offsetHeight;
 
         if (canvas) {
-            canvas.width = this.canvasWidth * window.devicePixelRatio;
-            canvas.height = this.canvasHeight * window.devicePixelRatio;
-            canvas.style.width = canvas.width + 'px';
-            canvas.style.height = canvas.height + 'px';
+            const scale = window.devicePixelRatio;
+            canvas.width = this.canvasWidth;
+            canvas.height = this.canvasHeight;
+            canvas.style.width = this.canvasWidth + 'px';
+            canvas.style.height = this.canvasHeight + 'px';
         }
     }
 
@@ -46,17 +47,36 @@ export class CanvasTimeBar extends EventEmitter {
             const ctx = canvas.getContext('2d')
             ctx.clearRect(0, 0, canvasWidth, canvasHeight)
 
-            // this.drawBackground(ctx)
+            if (this.state.futureMode) {
+                this.drawBackground(ctx)
+            }
             this.drawTimeAxis(ctx)
         }
     }
 
-    drawBackground (ctx) {
-        const { canvasWidth, canvasHeight } = this;
+    isHistoryTime(x) {
+        const { state } = this;
+        const timestamp = state.startTimeStamp + x * state.unitOfMs
 
+        const now = dayjs();
+        const mintuns = now.minute();
+        const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).valueOf()
+        return timestamp < halfTimestamp;
+    }
+
+    drawBackground (ctx) {
+        const { canvasWidth, canvasHeight, state } = this;
+        const now = dayjs();
+        const mintuns = now.minute();
+        const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).valueOf()
+        const x = Math.max((halfTimestamp - state.startTimeStamp) / state.unitOfMs, 0);
         ctx.beginPath()
-        ctx.rect(0, 0, canvasWidth, canvasHeight)
-        ctx.fillStyle = 'white'
+        ctx.rect(0, 0, x, canvasHeight)
+        ctx.fillStyle = '#9c9c9c'
+        ctx.fill()
+        ctx.beginPath()
+        ctx.rect(x, 0, canvasWidth, canvasHeight)
+        ctx.fillStyle = 'rgba(0, 99, 157, 0.6)'
         ctx.fill()
         ctx.closePath()
     }
@@ -122,6 +142,12 @@ export class CanvasTimeBar extends EventEmitter {
 
         let clickWhich;
 
+        const mouseenter = (e) => {
+            if (this.state.futureMode) {
+                e.target.style.cursor =  this.isHistoryTime(e.offsetX) ? 'not-allowed' : 'pointer';
+            }
+        }
+
         const mousedown = (e) => {
             e.preventDefault();
             if (canvas === e.target) {
@@ -149,6 +175,12 @@ export class CanvasTimeBar extends EventEmitter {
             }
         }
 
+        const pointermove = (e) => {
+            if (this.state.futureMode) {
+                e.target.style.cursor = this.isHistoryTime(e.offsetX) ? 'not-allowed' : 'pointer';
+            }
+        }
+
         const mouseup = (e) => {
             e.preventDefault();
             mouseDowned = false;
@@ -156,7 +188,13 @@ export class CanvasTimeBar extends EventEmitter {
             isMouseEvent = mouseUpTime - mouseDownTime > diffTime
             if (!isMouseEvent) {
                 if (clickWhich === CLICK_Left) {
-                    this.emit('time-bar-click', {offset: startPos - canvas.getBoundingClientRect().left})
+                    if (this.state.futureMode) {
+                        if (!this.isHistoryTime(e.offsetX)) {
+                            this.emit('time-bar-click', {offset: startPos - canvas.getBoundingClientRect().left})
+                        }
+                    } else {
+                        this.emit('time-bar-click', {offset: startPos - canvas.getBoundingClientRect().left})
+                    }
                 }
             } else {
                 this.emit('time-bar-mouseup', { offset: endPos - canvas.getBoundingClientRect().left })
@@ -191,6 +229,8 @@ export class CanvasTimeBar extends EventEmitter {
         }
 
         canvas.addEventListener('mousedown', mousedown)
+        canvas.addEventListener('mousemove', pointermove)
+        canvas.addEventListener('mouseenter', mouseenter)
         // canvas.addEventListener('mousemove', mousemove)
         window.addEventListener('mouseup', mouseup)
         // window.addEventListener('mouseleave', mouseleave)
@@ -198,6 +238,8 @@ export class CanvasTimeBar extends EventEmitter {
 
         return {
             dispose: () => {
+                canvas.removeEventListener('mouseenter', mouseenter)
+                canvas.removeEventListener('mousemove', pointermove)
                 window.removeEventListener('mousedown', mousedown)
                 // canvas.removeEventListener('mousemove', mousemove)
                 window.removeEventListener('mouseup', mouseup)

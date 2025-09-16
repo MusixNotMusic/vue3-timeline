@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import dayjs from 'dayjs';
 import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
 import TimeLineSimpleMain from '../packages/src/TimeLine/v2/TimeLineSimpleMain.vue'
 
@@ -10,6 +11,8 @@ const text = ref('music is my life');
 
 const timeLineRef = ref(null)
 const datePickerTime = ref(new Date());
+
+const forecast = ref(false)
 
 const autoAnimationTimeStampChange = (data) => {
   console.log('autoAnimationTimeStampChange ==>', data);
@@ -33,7 +36,7 @@ const manualAnimationTimeStampChange = (controller) => {
 
 
 const currentTimeChange = (time) => {
-  console.log('currentTimeChange ==>', time);
+  console.log('currentTimeChange ==>', dayjs(time).format('YYYY-MM-DD HH:mm:ss'));
 }
 
 const datePickerChange = (time) => {
@@ -50,7 +53,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="time-line-bar">
+  <!-- <div class="time-line-bar">
     <el-date-picker
           v-model="datePickerTime"
           prefix-icon="cdywIFTimeLine"
@@ -73,17 +76,25 @@ onMounted(() => {
                 @currentTimeChange="currentTimeChange">
       </TimeLineMain>
     </div>
-  </div>
+  </div> -->
 
   <el-input v-model="text" type="textarea" style="width: 400px;"></el-input>
-
-
   <div class="time-line-bar">
-    <div class="time-line-wrap">
+      <el-date-picker
+            v-model="datePickerTime"
+            prefix-icon="cdywIFTimeLine"
+            ref="datePickerRef"
+            type="datetime"
+            :editable="true"
+            format="YYYY-MM-DD HH:mm"
+            placeholder="选择日期"
+            @change="datePickerChange"/>
+      <div class="time-line-wrap">
       <TimeLineSimpleMain theme="blue"
                 ref="timeLineRef"
-                :stepSecond="3 * 60 * 1000"
+                :stepSecond="6 * 60 * 1000"
                 :playMode="'auto'"
+                :forecast="forecast"
                 v-model="datePickerTime"
                 @autoAnimationTimeStampChange="autoAnimationTimeStampChange"
                 @manualAnimationTimeStampChange="manualAnimationTimeStampChange"
@@ -91,6 +102,7 @@ onMounted(() => {
       </TimeLineSimpleMain>
     </div>
   </div>
+  <el-button @click="forecast = !forecast">{{ forecast ? '预报' : '实况' }}</el-button>
 </template>
 
 <style scoped>

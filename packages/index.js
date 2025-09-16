@@ -5,11 +5,12 @@ import TimeLineSimpleMain from './src/TimeLine/v2/TimeLineSimpleMain.vue'
 const plugin = {
   install(app) {
     app.component(TimeLineMain.name, TimeLineMain),
-    app.component(TimeLineSimpleMain.name, TimeLineSimpleMain),
+    app.component(TimeLineSimpleMain.name, TimeLineSimpleMain)
   }
 }
 
 export { 
   TimeBarCanvasSimple, 
   TimeLineMain, 
-  TimeLineSimpleMain }
+  TimeLineSimpleMain 
+}
