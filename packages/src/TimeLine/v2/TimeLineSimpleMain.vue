@@ -3,8 +3,8 @@
         <TimeNotController
                 ref="TimeNotControllerRef"
                 :isPlay="isPlay"
-                @preTimeTickClick="preTimeTickClick"
-                @nextTimeTickClick="nextTimeTickClick"
+                @preTimeTickClick="prevTick"
+                @nextTimeTickClick="nextTick"
                 @playAnimationClick="playAnimationClick"
         ></TimeNotController>
 
@@ -347,21 +347,21 @@ export default {
         clickTimeBar();
       }
 
-      const keyDownHandler = (event) => { 
-        const key = event.key || event.keyCode; // 优先使用 event.key，回退到 event.keyCode
-        if (key === 'ArrowLeft' || key === 37) {
-            const now = dayjs();
-            const mintuns = now.minute();
-            const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
-            const currentTimestamp = dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
-            if (currentTimestamp <= halfTimestamp) {
-              if(state.forecast) return;
-              preTimeTickClick({ value: -1 })
-            } else {
-              preTimeTickClick({ value: -(30 / (props.stepSecond / 60000)) })
-            }
-        } else if (key === 'ArrowRight' || key === 39) {
-            const now = dayjs();
+      const prevTick = () => {
+        const now = dayjs();
+        const mintuns = now.minute();
+        const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
+        const currentTimestamp = dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
+        if (currentTimestamp <= halfTimestamp) {
+          if(state.forecast) return;
+          preTimeTickClick({ value: -1 })
+        } else {
+          preTimeTickClick({ value: -(30 / (props.stepSecond / 60000)) })
+        }
+      }
+
+      const nextTick = () => {
+        const now = dayjs();
             const mintuns = now.minute();
             const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
             if (state.currentTimestamp.valueOf() < halfTimestamp) {
@@ -377,6 +377,14 @@ export default {
             } else {
               preTimeTickClick({ value: 30 / (props.stepSecond / 60000) })
             }
+      }
+
+      const keyDownHandler = (event) => { 
+        const key = event.key || event.keyCode; // 优先使用 event.key，回退到 event.keyCode
+        if (key === 'ArrowLeft' || key === 37) {
+          prevTick();
+        } else if (key === 'ArrowRight' || key === 39) {
+          nextTick();
         } else if (key === 'ArrowUp' || key === 38) {
           if(state.forecast) return;
           liveModeClick();
@@ -421,6 +429,9 @@ export default {
         clickTimeBar,
         nowTimeStampChange,
         toDefaultStatus,
+        nextTick,
+        prevTick
+
       }
     }
 }

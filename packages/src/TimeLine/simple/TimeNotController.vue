@@ -35,25 +35,25 @@ export default {
       const preTimeTick = () => {
         counter = 0;
         emit('preTimeTickClick', { value: -1 })
-        timer = setInterval(() => {
-          const rate = Math.E ** Math.min(5, counter++) | 0;
-          emit('preTimeTickClick', { value: -1 * rate })
-        }, 200)
+        // timer = setInterval(() => {
+        //   const rate = Math.E ** Math.min(5, counter++) | 0;
+        //   emit('preTimeTickClick', { value: -1 * rate })
+        // }, 200)
       };
 
       // 下一刻度
       const nextTimeTick = (event) => {
         counter = 0;
         emit('nextTimeTickClick', { value: 1 })
-        timer = setInterval(() => {
-          console.log('nextTimeTick ==>', event.timeStamp) 
-          const rate = Math.E ** Math.min(5, counter++) | 0;
-          emit('nextTimeTickClick', { value: 1 * rate })
-        }, 200)
+        // timer = setInterval(() => {
+        //   console.log('nextTimeTick ==>', event.timeStamp) 
+        //   const rate = Math.E ** Math.min(5, counter++) | 0;
+        //   emit('nextTimeTickClick', { value: 1 * rate })
+        // }, 200)
       };
 
       const mouseUpClear = () => {
-        clearInterval(timer)
+        // clearInterval(timer)
       }
 
       const setPlayStatus = () => {

@@ -33,22 +33,17 @@ export default {
 
       // 上一刻度
       const preTimeTick = () => {
-        counter = 0;
         emit('preTimeTickClick', { value: -1 })
         timer = setInterval(() => {
-          const rate = Math.E ** Math.min(5, counter++) | 0;
-          emit('preTimeTickClick', { value: -1 * rate })
+          emit('preTimeTickClick', { value: -1 })
         }, 200)
       };
 
       // 下一刻度
       const nextTimeTick = (event) => {
-        counter = 0;
         emit('nextTimeTickClick', { value: 1 })
         timer = setInterval(() => {
-          console.log('nextTimeTick ==>', event.timeStamp) 
-          const rate = Math.E ** Math.min(5, counter++) | 0;
-          emit('nextTimeTickClick', { value: 1 * rate })
+          emit('nextTimeTickClick', { value: 1 })
         }, 200)
       };
 
