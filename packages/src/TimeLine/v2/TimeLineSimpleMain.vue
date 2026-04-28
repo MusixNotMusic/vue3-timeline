@@ -25,8 +25,9 @@
         </TimeBarCanvasSimple>
     </div>
 </template>
+
 <script lang="ts">
-import { onMounted, reactive, toRefs, ref, watch, onUnmounted } from 'vue'
+import { defineComponent, onMounted, reactive, toRefs, ref, watch, onUnmounted, type PropType } from 'vue'
 import dayjs from 'dayjs'
 
 import TimeNotController from './TimeNotController.vue'
@@ -35,6 +36,7 @@ import TimeTickLabel from './TimeTickLable.vue'
 import TimePointer from './FreePointer.vue'
 import { _setInterval, _clearInterval } from '../utils/interval'
 import { parseTimeStringToMillisecond } from '../utils/parseTime'
+import { ManualController } from '../../types'
 import '../iconfont/iconfont.css'
 
 enum Mode {
@@ -44,7 +46,7 @@ enum Mode {
   Auto
 };
 
-export default {
+export default defineComponent({
     name: 'TimeLineSimpleMain',
     emit: [
       'autoAnimationTimeStampChange',
@@ -64,15 +66,15 @@ export default {
           default: 'default'
         },
         modelValue: {
-          type: [Date, Number],
-          require: true
+          type: [Date, Number] as PropType<Date | number>,
+          required: true
         },
         onePixelTimeUnit: {
-          type: [Number, String],
+          type: [Number, String] as PropType<number | string>,
           default: '1m'
         },
         stepSecond: {
-          type: [Number, String],
+          type: [Number, String] as PropType<number | string>,
           default: 3 * 60 * 1000
         },
         playMode: {
@@ -83,27 +85,28 @@ export default {
         forecast: Boolean,
     },
     setup (props, { emit }) {
-        const TimeBarCanvasRef = ref(null)
+        const TimeBarCanvasRef = ref<InstanceType<typeof TimeBarCanvasSimple> | null>(null)
         const TimeAnimationBarRef = ref(null)
-        const TimeNotControllerRef = ref(null)
-        watch(() =>props.forecast, (val, old) => { 
+        const TimeNotControllerRef = ref<InstanceType<typeof TimeNotController> | null>(null)
+
+        watch(() => props.forecast, (val, old) => {
           if(val !== old) {
             state.forecast = val;
           }
         })
 
-        const state: any = reactive({
+        const state = reactive({
           isLive: false,
           isPlay: false,
           isAutoPlay: false,
-          currentTimestamp: props.modelValue?.valueOf(),
+          currentTimestamp: dayjs(props.modelValue).valueOf(),
           nowTimeStamp: 0,
           currentMode: Mode.Default,
           transformMode: Mode.Default,
-          forcast: !!props.forcast
+          forecast: !!props.forecast
         })
 
-        watch(() =>props.playMode, (val, old) => {
+        watch(() => props.playMode, (val, old) => {
           if (val !== old) {
             toDefault();
             toAutoStop();
@@ -112,98 +115,98 @@ export default {
           }
         })
 
-        watch(() =>props.modelValue, (val, old) => {
-          if (val && old && val.valueOf() !== old.valueOf()) {
+        watch(() => props.modelValue, (val, old) => {
+          if (val && old && dayjs(val).valueOf() !== dayjs(old).valueOf()) {
             currentTimeChange(val);
           }
         })
 
         // =======================
-        const noop = () => {};
+        const noop = (): void => {};
 
-        const toDefault = () => {
+        const toDefault = (): void => {
           state.isLive = false;
         }
 
-        const toLive = () => {
+        const toLive = (): void => {
           currentTimeChange(state.nowTimeStamp);
           state.isLive = true;
         }
 
         // ===========Auto Play==================
 
-        let timer = -1;
+        let timer: ReturnType<typeof _setInterval> | number = -1;
         const delayTime = 1000;
 
-        const toAutoPlay = () => {
+        const toAutoPlay = (): void => {
           toAutoStop();
-          timer = _setInterval(() => { 
-            state.currentTimestamp = state.currentTimestamp.valueOf() + props.stepSecond;
+          timer = _setInterval(() => {
+            state.currentTimestamp = dayjs(state.currentTimestamp).valueOf() + Number(props.stepSecond);
             emit('autoAnimationTimeStampChange', state.currentTimestamp);
             emit('update:modelValue', state.currentTimestamp);
           }, delayTime)
         }
 
-        const toAutoStop = () => { 
+        const toAutoStop = (): void => {
           _clearInterval(timer);
         }
 
-        const setStopStatus = () => {
+        const setStopStatus = (): void => {
           if(TimeNotControllerRef.value) {
             TimeNotControllerRef.value.setStopStatus()
           }
         }
 
         //===========手动播放===============
-        let manualController: any = {};
-        const toManualPlay = () => {
+        let manualController: ManualController = {};
+        const toManualPlay = (): void => {
           manualController.currentTimestamp = state.currentTimestamp;
           manualController.nextTick = (time) => {
-            state.currentTimestamp = time.valueOf();
-            manualController.currentTimestamp = time.valueOf();
+            state.currentTimestamp = dayjs(time).valueOf();
+            manualController.currentTimestamp = dayjs(time).valueOf();
           };
 
           emit('manualAnimationTimeStampChange', manualController);
           emit('update:modelValue', state.currentTimestamp);
         }
 
-        const toManualStop = () => {
+        const toManualStop = (): void => {
           if (manualController.stop) {
             manualController.stop();
           }
         }
 
-        const default2live = () => { 
+        const default2live = (): void => {
           toLive();
         }
-        
-        const default2manual = () => {
+
+        const default2manual = (): void => {
           toManualPlay();
         }
 
-        const default2auto = () => {
+        const default2auto = (): void => {
           toAutoPlay();
         }
 
-        const live2default = () => {
+        const live2default = (): void => {
           toDefault();
         }
         const live2live = noop;
-        const live2manual = () => {
+        const live2manual = (): void => {
           toDefault();
           toManualPlay();
         }
-        const live2auto = () => {
+        const live2auto = (): void => {
           toDefault();
           toAutoPlay();
         }
 
-        const manual2default = () => {
+        const manual2default = (): void => {
           toDefault();
           toManualStop();
           setStopStatus();
         }
-        const manual2live = () => {
+        const manual2live = (): void => {
           toManualStop();
           toLive();
           setStopStatus();
@@ -212,12 +215,12 @@ export default {
         const manual2manual = noop;
         const manual2auto = noop;
 
-        const auto2default = () => {
+        const auto2default = (): void => {
           toDefault();
           toAutoStop();
           setStopStatus();
         }
-        const auto2live = () => {
+        const auto2live = (): void => {
           toAutoStop();
           toLive();
           setStopStatus();
@@ -228,7 +231,7 @@ export default {
         /**
          * 状态机列表
          */
-        const stateMechine = [
+        const stateMechine: Array<Array<() => void>> = [
           [noop,           default2live, default2manual, default2auto],
           [live2default,   live2live,    live2manual,    live2auto],
           [manual2default, manual2live,  manual2manual,  manual2auto],
@@ -245,7 +248,7 @@ export default {
          */
 
 
-        const transformEvent = (eventType, mode) => {
+        const transformEvent = (eventType: string, mode: Mode): void => {
           let transformFunc = noop;
           switch(eventType) {
             case 'prevTime':   transformFunc = stateMechine[state.currentMode][mode]; break;
@@ -260,7 +263,7 @@ export default {
           state.currentMode = mode;
         }
 
-        const liveModeClick = () => {
+        const liveModeClick = (): void => {
             if(state.currentMode === Mode.Live) {
               transformEvent('liveMode', Mode.Default);
             } else if(state.currentMode === Mode.Default){
@@ -276,7 +279,7 @@ export default {
          * 1、主动触发
          * 2、被动触发
          */
-        const playAnimationClick = (isPlay) => {
+        const playAnimationClick = (isPlay: boolean): void => {
           if (props.playMode === 'auto') {
             autoPlayClick(isPlay);
           } else if (props.playMode === 'manual'){
@@ -284,7 +287,7 @@ export default {
           }
         }
 
-        const autoPlayClick = (isPlay) => {
+        const autoPlayClick = (isPlay: boolean): void => {
           if (isPlay) {
             transformEvent('play', Mode.Auto);
           } else {
@@ -292,7 +295,7 @@ export default {
           }
         }
 
-        const manualPlayClick = (isPlay) => {
+        const manualPlayClick = (isPlay: boolean): void => {
           if (isPlay) {
             transformEvent('play', Mode.Manual);
           } else {
@@ -300,31 +303,31 @@ export default {
           }
         }
 
-        const clickTimeBar = () => {
+        const clickTimeBar = (): void => {
           transformEvent('clickTimeBar', Mode.Default);
         }
 
 
-        const preTimeTickClick = (rate) => {
+        const preTimeTickClick = (rate: { value: number }): void => {
           if (TimeBarCanvasRef.value) {
-            const k = props.stepSecond / parseTimeStringToMillisecond(props.onePixelTimeUnit);
+            const k = Number(props.stepSecond) / parseTimeStringToMillisecond(props.onePixelTimeUnit);
             rate.value = rate.value * k;
             TimeBarCanvasRef.value.prevTimeTick(rate);
           }
         }
 
-        const nextTimeTickClick = (rate) => {
+        const nextTimeTickClick = (rate: { value: number }): void => {
           if (TimeBarCanvasRef.value) {
-            const k = props.stepSecond / parseTimeStringToMillisecond(props.onePixelTimeUnit);
+            const k = Number(props.stepSecond) / parseTimeStringToMillisecond(props.onePixelTimeUnit);
             rate.value = rate.value * k;
             TimeBarCanvasRef.value.nextTimeTick(rate)
           }
         }
 
 
-      const currentTimeChange = (time) => {
-        if (state.currentTimestamp.valueOf() !== time.valueOf()) {
-          state.currentTimestamp = time;
+      const currentTimeChange = (time: Date | number): void => {
+        if (dayjs(state.currentTimestamp).valueOf() !== dayjs(time).valueOf()) {
+          state.currentTimestamp = dayjs(time).valueOf();
           emit('currentTimeChange', time);
           emit('update:modelValue', time);
         }
@@ -332,9 +335,9 @@ export default {
 
       /**
        * 当前时间修改
-       * @param time 
+       * @param time
        */
-      const nowTimeStampChange = (time) => {
+      const nowTimeStampChange = (time: number): void => {
           state.nowTimeStamp = time;
           if (state.currentMode === Mode.Live) {
             state.currentTimestamp = state.nowTimeStamp;
@@ -343,31 +346,31 @@ export default {
           }
       }
 
-      const toDefaultStatus = () => {
+      const toDefaultStatus = (): void => {
         clickTimeBar();
       }
 
-      const prevTick = () => {
+      const prevTick = (): void => {
         const now = dayjs();
-        const mintuns = now.minute();
-        const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
+        const minutes = now.minute();
+        const halfTimestamp = now.set('minute', 30 * Math.ceil(minutes / 30)).set('second', 0).set('millisecond', 0).valueOf()
         const currentTimestamp = dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
         if (currentTimestamp <= halfTimestamp) {
           if(state.forecast) return;
           preTimeTickClick({ value: -1 })
         } else {
-          preTimeTickClick({ value: -(30 / (props.stepSecond / 60000)) })
+          preTimeTickClick({ value: -(30 / (Number(props.stepSecond) / 60000)) })
         }
       }
 
-      const nextTick = () => {
+      const nextTick = (): void => {
         const now = dayjs();
-            const mintuns = now.minute();
-            const halfTimestamp = now.set('minute', 30 * Math.ceil(mintuns / 30)).set('second', 0).set('millisecond', 0).valueOf()
-            if (state.currentTimestamp.valueOf() < halfTimestamp) {
+            const minutes = now.minute();
+            const halfTimestamp = now.set('minute', 30 * Math.ceil(minutes / 30)).set('second', 0).set('millisecond', 0).valueOf()
+            if (state.currentTimestamp < halfTimestamp) {
               if(state.forecast) return;
               const diff = halfTimestamp - dayjs(state.currentTimestamp).set('second', 0).set('millisecond', 0).valueOf();
-              if (diff < props.stepSecond) {
+              if (diff < Number(props.stepSecond)) {
                 setTimeout(() => {
                   currentTimeChange(halfTimestamp);
                 })
@@ -375,12 +378,12 @@ export default {
                 preTimeTickClick({ value: 1 })
               }
             } else {
-              preTimeTickClick({ value: 30 / (props.stepSecond / 60000) })
+              preTimeTickClick({ value: 30 / (Number(props.stepSecond) / 60000) })
             }
       }
 
-      const keyDownHandler = (event) => { 
-        const key = event.key || event.keyCode; // 优先使用 event.key，回退到 event.keyCode
+      const keyDownHandler = (event: KeyboardEvent): void => {
+        const key = event.key || event.keyCode;
         if (key === 'ArrowLeft' || key === 37) {
           prevTick();
         } else if (key === 'ArrowRight' || key === 39) {
@@ -391,11 +394,11 @@ export default {
         }
       }
 
-      const addEventListener = () => { 
+      const addEventListener = (): void => {
         document.addEventListener('keydown', keyDownHandler);
       }
 
-      const removeEventListener = () => { 
+      const removeEventListener = (): void => {
         document.removeEventListener('keydown', keyDownHandler);
       }
 
@@ -434,8 +437,9 @@ export default {
 
       }
     }
-}
+})
 </script>
+
 <style lang="scss" scoped>
 @import '../theme/default';
 @import '../theme/blue';

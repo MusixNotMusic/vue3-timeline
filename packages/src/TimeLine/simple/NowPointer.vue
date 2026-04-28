@@ -1,97 +1,111 @@
 <template>
   <div class="now-pointer-box" :style="pointerStyle">
-    <div class="now-pointer-wrap" :style="{left: state.offset + 'px'}">
+    <div class="now-pointer-wrap" :style="{ left: state.offset + 'px' }">
       <span>实况</span>
       <div class="tick-pointer"></div>
       <span>预报</span>
     </div>
   </div>
 </template>
-<script>
-import { onMounted, onUnmounted, reactive, watch, computed, nextTick } from 'vue'
-import { _setInterval, _clearInterval } from '../utils/interval'
 
-export default {
-  name: 'TimeTickLabel',
+<script lang="ts">
+import { defineComponent, onMounted, onUnmounted, reactive, watch, computed, nextTick, type PropType, type CSSProperties } from 'vue';
+import { _setInterval, _clearInterval } from '../utils/interval';
+
+export interface NowPointerChangePayload {
+  offset: number;
+  needNextPage: boolean;
+  nowTimeStamp: number;
+}
+
+export default defineComponent({
+  name: 'NowPointer',
   emits: ['change'],
   props: {
     unitTime: {
-      type: [Number, String],
-      default: 0
+      type: [Number, String] as PropType<number | string>,
+      default: 0,
     },
     value: {
-      type: Number,
-      default: 0
+      type: Number as PropType<number>,
+      default: 0,
     },
     timeBarWidth: {
-      type: Number,
-      default: 0
-    }
+      type: Number as PropType<number>,
+      default: 0,
+    },
   },
-  setup (props, { emit }) {
-    let timer = -1;
+  setup(props, { emit }) {
+    let timer: ReturnType<typeof _setInterval> | number = -1;
     const state = reactive({
       offset: 0,
-      currentTimeStamp: -1
-    })
+      currentTimeStamp: -1,
+    });
 
-    watch(() => props.value, (val, old) => {
-      if (val !== old) {
-        setPointer()
+    watch(
+      () => props.value,
+      (val, old) => {
+        if (val !== old) {
+          setPointer();
+        }
       }
-    })
+    );
 
-    watch(() => props.timeBarWidth, (val, old) => {
-      if (val !== old) {
-        setPointer()
+    watch(
+      () => props.timeBarWidth,
+      (val, old) => {
+        if (val !== old) {
+          setPointer();
+        }
       }
-    })
+    );
 
-    /**
-     * 设置指针
-     */
-    const setPointer = () => {
-      state.currentTimeStamp = Date.now()
-      state.offset = (state.currentTimeStamp - props.value) / props.unitTime
-      emit('change', { offset: state.offset, needNextPage: state.offset >= props.timeBarWidth - 40, nowTimeStamp: state.currentTimeStamp })
-    }
+    const setPointer = (): void => {
+      state.currentTimeStamp = Date.now();
+      state.offset = (state.currentTimeStamp - props.value) / Number(props.unitTime);
+      emit('change', {
+        offset: state.offset,
+        needNextPage: state.offset >= props.timeBarWidth - 40,
+        nowTimeStamp: state.currentTimeStamp,
+      });
+    };
 
-    const pointerStyle = computed(() => {
+    const pointerStyle = computed<CSSProperties>(() => {
       return {
-        visibility: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'visible' : 'hidden',
-        overflow: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'unset' : 'hidden',
-      }
-    })
+        visibility: state.offset >= 0 && state.offset <= props.timeBarWidth ? 'visible' : 'hidden',
+        overflow: state.offset >= 0 && state.offset <= props.timeBarWidth ? 'unset' : 'hidden',
+      };
+    });
 
-    const runClock = () => {
+    const runClock = (): void => {
       nextTick(() => {
-        const delayTime = 10 * 1000 || props.unitTime
-        // 设置 实况
+        const delayTime = 10 * 1000;
         setTimeout(() => {
           timer = _setInterval(() => {
-              setPointer();
-          }, delayTime)
-        }, delayTime)
+            setPointer();
+          }, delayTime);
+        }, delayTime);
       });
-    }
+    };
 
     onMounted(() => {
-      setPointer()
-      runClock()
-    })
+      setPointer();
+      runClock();
+    });
 
     onUnmounted(() => {
-      _clearInterval(timer)
-    })
+      _clearInterval(timer);
+    });
 
     return {
       ...props,
       state,
-      pointerStyle
-    }
-  }
-}
+      pointerStyle,
+    };
+  },
+});
 </script>
+
 <style scoped lang="scss">
 .now-pointer-box {
   width: 100%;

@@ -1,77 +1,85 @@
 <template>
-    <div class="time-control">
-        <span class="cdywIFTimeLine icon-timeline-zuobian icon-color" @mousedown="preTimeTick($event)" @mouseup="mouseUpClear"></span>
+  <div class="time-control">
+    <span
+      class="cdywIFTimeLine icon-timeline-zuobian icon-color"
+      @mousedown="preTimeTick"
+      @mouseup="mouseUpClear"
+    ></span>
 
-        <span
-            class="cdywIFTimeLine icon-timeline-bofang1 icon-color"
-            :class="{ 'icon-timeline-bofang1': !isPlay, 'icon-timeline-zanting1': isPlay }"
-            @click="clickPlayHandle()" ></span>
+    <span
+      class="cdywIFTimeLine icon-timeline-bofang1 icon-color"
+      :class="{ 'icon-timeline-bofang1': !isPlay, 'icon-timeline-zanting1': isPlay }"
+      @click="clickPlayHandle"
+    ></span>
 
-        <span class="cdywIFTimeLine icon-timeline-youbian icon-color" @mousedown="nextTimeTick($event)" @mouseup="mouseUpClear"></span>
-    </div>
+    <span
+      class="cdywIFTimeLine icon-timeline-youbian icon-color"
+      @mousedown="nextTimeTick"
+      @mouseup="mouseUpClear"
+    ></span>
+  </div>
 </template>
 
-<script>
-import { onMounted, reactive, toRefs } from "vue";
+<script lang="ts">
+import { defineComponent, reactive, toRefs } from 'vue';
 
-export default {
-    name: "TimeController",
-    emits: ["preTimeTickClick", "nextTimeTickClick", "playAnimationClick"],
-    setup(props, { emit }) {
-      const state = reactive({
-          isPlay: false,
-      });
+export default defineComponent({
+  name: 'TimeController',
+  emits: ['preTimeTickClick', 'nextTimeTickClick', 'playAnimationClick'],
+  setup(_props, { emit }) {
+    const state = reactive({
+      isPlay: false,
+    });
 
-      let timer = -1;
-      let counter = 0;
+    let timer: ReturnType<typeof setInterval> | null = null;
 
-      // 点击播放按钮
-      const clickPlayHandle = () => {
-          state.isPlay = !state.isPlay;
-          emit('playAnimationClick', state.isPlay)
-      };
+    const clickPlayHandle = (): void => {
+      state.isPlay = !state.isPlay;
+      emit('playAnimationClick', state.isPlay);
+    };
 
-      // 上一刻度
-      const preTimeTick = () => {
-        emit('preTimeTickClick', { value: -1 })
-        timer = setInterval(() => {
-          emit('preTimeTickClick', { value: -1 })
-        }, 200)
-      };
+    const preTimeTick = (): void => {
+      emit('preTimeTickClick', { value: -1 });
+      timer = setInterval(() => {
+        emit('preTimeTickClick', { value: -1 });
+      }, 200);
+    };
 
-      // 下一刻度
-      const nextTimeTick = (event) => {
-        emit('nextTimeTickClick', { value: 1 })
-        timer = setInterval(() => {
-          emit('nextTimeTickClick', { value: 1 })
-        }, 200)
-      };
+    const nextTimeTick = (): void => {
+      emit('nextTimeTickClick', { value: 1 });
+      timer = setInterval(() => {
+        emit('nextTimeTickClick', { value: 1 });
+      }, 200);
+    };
 
-      const mouseUpClear = () => {
-        clearInterval(timer)
+    const mouseUpClear = (): void => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
       }
+    };
 
-      const setPlayStatus = () => {
-          state.isPlay = true;
-      }
+    const setPlayStatus = (): void => {
+      state.isPlay = true;
+    };
 
-      const setStopStatus = () => {
-          state.isPlay = false;
-      }
+    const setStopStatus = (): void => {
+      state.isPlay = false;
+    };
 
-      const refData = toRefs(state);
+    const refData = toRefs(state);
 
-      return {
-        ...refData,
-        clickPlayHandle,
-        preTimeTick,
-        nextTimeTick,
-        mouseUpClear,
-        setPlayStatus,
-        setStopStatus
-      };
-   },
-};
+    return {
+      ...refData,
+      clickPlayHandle,
+      preTimeTick,
+      nextTimeTick,
+      mouseUpClear,
+      setPlayStatus,
+      setStopStatus,
+    };
+  },
+});
 </script>
 
 <style lang="scss" scoped>

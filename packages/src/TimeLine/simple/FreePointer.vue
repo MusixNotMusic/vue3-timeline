@@ -1,126 +1,150 @@
 <template>
   <div class="time-pointer-box" :style="timePointerBoxStyle" ref="timePointerBoxRef">
-    <div class="time-pointer-wrap" :class="{transitionLeft: state.isTransition}" :style="{left: state.offset + 'px'}" ref="timePointerWrapRef">
-      <div class="current-time" ref="currentTimeRef">{{state.timeFormatText}}</div>
+    <div
+      class="time-pointer-wrap"
+      :class="{ transitionLeft: state.isTransition }"
+      :style="{ left: state.offset + 'px' }"
+      ref="timePointerWrapRef"
+    >
+      <div class="current-time" ref="currentTimeRef">{{ state.timeFormatText }}</div>
       <div class="time-pointer" ref="timePointerRef"></div>
     </div>
   </div>
 </template>
-<script>
-import { ref, onMounted, reactive, watch, computed } from 'vue';
-import dayjs from 'dayjs';
-import { carryBitTable, parseTimeStringToObject } from '../utils/parseTime';
 
-export default {
-  name: 'TimeTickLabel',
+<script lang="ts">
+import { defineComponent, ref, onMounted, reactive, watch, computed, type PropType, type CSSProperties } from 'vue';
+import dayjs from 'dayjs';
+import { carryBitTable, parseTimeStringToObject, type TimeUnitObject } from '../utils/parseTime';
+
+export interface PointerChangePayload {
+  offset: number;
+  needNextPage: boolean;
+  nowTimeStamp: number;
+}
+
+export default defineComponent({
+  name: 'FreePointer',
   emits: ['mousemove', 'mouseup', 'change'],
   props: {
     timeBarWidth: {
-      type: [Number, String],
-      default: 0
+      type: [Number, String] as PropType<number | string>,
+      default: 0,
     },
     startTimeStamp: {
-      type: [Number, Date],
-      default: 0
+      type: [Number, Date] as PropType<number | Date>,
+      default: 0,
     },
     freeTimeStamp: {
-      type: [Number, Date],
-      default: 0
+      type: [Number, Date] as PropType<number | Date>,
+      default: 0,
     },
     unitTime: {
-      type: [Number, String],
-      default: 0
+      type: [Number, String] as PropType<number | string>,
+      default: 0,
     },
     onePixelTimeUnit: {
-        type: [Number, String],
-        default: '30s'
-    }
+      type: [Number, String] as PropType<number | string>,
+      default: '30s',
+    },
   },
-  setup (props, { emit }) {
-    const timePointerBoxRef = ref(null)
-    const timePointerWrapRef = ref(null)
-    const currentTimeRef = ref(null)
-    const timePointerRef = ref(null)
+  setup(props, { emit }) {
+    const timePointerBoxRef = ref<HTMLDivElement | null>(null);
+    const timePointerWrapRef = ref<HTMLDivElement | null>(null);
+    const currentTimeRef = ref<HTMLDivElement | null>(null);
+    const timePointerRef = ref<HTMLDivElement | null>(null);
 
-    const unitOfObject = parseTimeStringToObject(props.onePixelTimeUnit);
+    const unitOfObject: TimeUnitObject | null = parseTimeStringToObject(props.onePixelTimeUnit);
 
     const state = reactive({
       timeFormatText: '',
       offset: 0,
-      isTransition: false
-    })
+      isTransition: false,
+    });
 
-    const updateOffset = (startTimeStamp, freeTimeStamp) => {
-      state.offset = (freeTimeStamp.valueOf() - startTimeStamp.valueOf()) / props.unitTime;
-      state.timeFormatText = dayjs(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
-    }
-
-    const updateFreeTimeStamp = (offset, done) => {
-      const freeTimeStamp = Math.ceil(props.startTimeStamp + offset * props.unitTime);
-      state.timeFormatText = dayjs(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime)
-      done && emit('change', freeTimeStamp)
-    }
-
-    watch(() => props.startTimeStamp, (val, old) => {
-      if (val !== old) {
-        updateOffset(props.startTimeStamp, props.freeTimeStamp);
+    const updateOffset = (startTimeStamp: number | Date, freeTimeStamp: number | Date): void => {
+      state.offset = (dayjs(freeTimeStamp).valueOf() - dayjs(startTimeStamp).valueOf()) / Number(props.unitTime);
+      if (unitOfObject) {
+        state.timeFormatText = dayjs(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime);
       }
-    })
+    };
 
-    watch(() => props.freeTimeStamp, (val, old) => {
-      if (val !== old) {
-        updateOffset(props.startTimeStamp, props.freeTimeStamp);
+    const updateFreeTimeStamp = (offset: number, done?: boolean): void => {
+      const freeTimeStamp = Math.ceil(Number(props.startTimeStamp) + offset * Number(props.unitTime));
+      if (unitOfObject) {
+        state.timeFormatText = dayjs(freeTimeStamp).format(carryBitTable[unitOfObject.unit].formatTime);
       }
-    })
+      if (done) {
+        emit('change', freeTimeStamp);
+      }
+    };
 
-    const timePointerBoxStyle = computed(() => {
+    watch(
+      () => props.startTimeStamp,
+      (val, old) => {
+        if (val !== old) {
+          updateOffset(props.startTimeStamp, props.freeTimeStamp);
+        }
+      }
+    );
+
+    watch(
+      () => props.freeTimeStamp,
+      (val, old) => {
+        if (val !== old) {
+          updateOffset(props.startTimeStamp, props.freeTimeStamp);
+        }
+      }
+    );
+
+    const timePointerBoxStyle = computed<CSSProperties>(() => {
+      const offset = state.offset;
+      const width = Number(props.timeBarWidth);
       return {
-        visibility: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'visible' : 'hidden',
-        overflow: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'unset' : 'hidden',
-        // display: (state.offset >= 0 && state.offset <= props.timeBarWidth) ? 'flex' : 'none',
-      }
-    })
+        visibility: offset >= 0 && offset <= width ? 'visible' : 'hidden',
+        overflow: offset >= 0 && offset <= width ? 'unset' : 'hidden',
+      };
+    });
 
-    const addEventListener = () => {
-      let x;
+    const addEventListener = (): void => {
+      let x = 0;
       let isClick = false;
 
-      let rect = timePointerBoxRef.value.getBoundingClientRect()
+      const rect = timePointerBoxRef.value?.getBoundingClientRect();
+      if (!rect) return;
 
-      const onMouseMove = (e) => {
+      const onMouseMove = (e: MouseEvent): void => {
         e.preventDefault();
         e.stopPropagation();
         if (isClick) {
-          let offset = e.clientX - x - rect.left;
-          if (offset >= 0 && offset < props.timeBarWidth) {
+          const offset = e.clientX - x - rect.left;
+          if (offset >= 0 && offset < Number(props.timeBarWidth)) {
             state.offset = offset;
-            updateFreeTimeStamp(offset)
+            updateFreeTimeStamp(offset);
           }
         }
-      }
+      };
 
       if (timePointerRef.value) {
-        timePointerRef.value.addEventListener('mousedown', function (e) {
-          x = e.offsetX
-          isClick = true
-          document.addEventListener('mousemove', onMouseMove)
-          // state.isTransition = false;
-        })
+        timePointerRef.value.addEventListener('mousedown', function (e: MouseEvent) {
+          x = e.offsetX;
+          isClick = true;
+          document.addEventListener('mousemove', onMouseMove);
+        });
 
         document.addEventListener('mouseup', function () {
-          document.removeEventListener('mousemove', onMouseMove)
+          document.removeEventListener('mousemove', onMouseMove);
           if (isClick) {
-            updateFreeTimeStamp(state.offset, true)
+            updateFreeTimeStamp(state.offset, true);
           }
-          isClick = false
-          // state.isTransition = true;
-        })
+          isClick = false;
+        });
       }
-    }
+    };
 
     onMounted(() => {
-      addEventListener()
-    })
+      addEventListener();
+    });
 
     return {
       ...props,
@@ -129,11 +153,12 @@ export default {
       timePointerWrapRef,
       currentTimeRef,
       timePointerRef,
-      timePointerBoxStyle
-    }
-  }
-}
+      timePointerBoxStyle,
+    };
+  },
+});
 </script>
+
 <style scoped lang="scss">
 .time-pointer-box {
   width: 100%;
@@ -160,7 +185,7 @@ export default {
       pointer-events: all;
 
       &::before {
-        content: "";
+        content: '';
         position: absolute;
         display: inline-block;
         border: 6px solid var(--theme-bg-active);
@@ -171,7 +196,6 @@ export default {
         border-left-color: transparent;
         border-right-color: transparent;
       }
-
     }
 
     .current-time {

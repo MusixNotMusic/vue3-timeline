@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import dayjs from 'dayjs';
-import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
-import TimeLineSimpleMain from '../packages/src/TimeLine/v2/TimeLineSimpleMain.vue'
+// import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
+// import TimeLineSimpleMain from '../packages/src/TimeLine/v2/TimeLineSimpleMain.vue'
 
-import '@cdyw/vue3-timeline-bar/dist/style.css'
+import { TimeLineMain, TimeLineSimpleMain } from '@cdyw/vue3-timeline-bar'
+// import { TimeLineMain, TimeLineSimpleMain } from '../dist'
+import '@cdyw/vue3-timeline-bar/style.css'
 
 
 const text = ref('music is my life');

@@ -8,19 +8,19 @@
           <!-- time label list  -->
           <TimeTickLabel :list="timeTickList"></TimeTickLabel>
           <!-- time cursor pointer -->
-          <FreePointer 
-            :startTimeStamp="startTimeStamp" 
-            :freeTimeStamp="currentTimeStamp" 
+          <FreePointer
+            :startTimeStamp="startTimeStamp"
+            :freeTimeStamp="currentTimeStamp"
             :timeBarWidth="timeBarWidth"
             :unitTime="unitOfMs"
             :onePixelTimeUnit="onePixelTimeUnit"
             @change="freeTimeStampChange">
           </FreePointer>
 
-          <NowPointer 
-            v-model:value="startTimeStamp" 
-            :timeBarWidth="timeBarWidth" 
-            :unitTime="unitOfMs" 
+          <NowPointer
+            v-model:value="startTimeStamp"
+            :timeBarWidth="timeBarWidth"
+            :unitTime="unitOfMs"
             @change="nowTimeStampChange">
           </NowPointer>
 
@@ -28,8 +28,9 @@
         </div>
     </div>
 </template>
-<script>
-import { onBeforeMount, onMounted, onUnmounted, reactive, ref, toRefs, watch } from "vue";
+
+<script lang="ts">
+import { defineComponent, onMounted, onUnmounted, reactive, ref, toRefs, watch, type PropType } from "vue";
 import dayjs from "dayjs";
 
 import { parseTimeStringToMillisecond, parseTimeStringToObject, getWholeTimeByUnit } from '../utils/parseTime'
@@ -38,29 +39,37 @@ import TimeTickLabel from './TimeTickLable.vue'
 import FreePointer from './FreePointer.vue'
 import NowPointer from './NowPointer.vue'
 
+export interface TimeBarState {
+  startTimeStamp: number;
+  timeTickList: { value: string; left: number; scale: number }[];
+  unitOfMs: number;
+  unitOfObject: { value: number; unit: string } | null;
+  timeBarWidth: number;
+  pointerDisabled: boolean;
+}
 
-export default {
+export default defineComponent({
     name: "TimeBarCanvasSimple",
     emits:['clickTimeBar', 'nowTimeStampChange', 'change'],
     components: { TimeTickLabel, FreePointer, NowPointer },
     props: {
         currentTimeStamp: {
-            type: [Date, Number],
-            default: Date.now()
+            type: [Date, Number] as PropType<Date | number>,
+            default: () => Date.now()
         },
         // 一像素 时间单位 最小单位 ms
         onePixelTimeUnit: {
-            type: [Number, String],
+            type: [Number, String] as PropType<number | string>,
             default: '30s'
         }
     },
     setup(props, { emit }) {
 
-      const timeBarWrapRef = ref(null);
-      const timeBarCanvasWrapRef = ref(null);
-      const timeBarCanvasRef = ref(null);
+      const timeBarWrapRef = ref<HTMLDivElement | null>(null);
+      const timeBarCanvasWrapRef = ref<HTMLDivElement | null>(null);
+      const timeBarCanvasRef = ref<HTMLCanvasElement | null>(null);
 
-      const state = reactive({
+      const state = reactive<TimeBarState>({
         startTimeStamp: 0,
         timeTickList: [],
         unitOfMs: parseTimeStringToMillisecond(props.onePixelTimeUnit),
@@ -69,11 +78,11 @@ export default {
         pointerDisabled: false,
       });
 
-      let canvasTimeBar = null;
+      let canvasTimeBar: CanvasTimeBar | null = null;
 
       watch(() => props.currentTimeStamp, (val, old) => {
         if(val !== old) {
-          setStartTimeStamp(props.currentTimeStamp);
+          setStartTimeStamp(Number(props.currentTimeStamp));
         }
       })
 
@@ -83,14 +92,14 @@ export default {
       const initTimeBar = () => {
         if (timeBarCanvasWrapRef.value) {
           state.timeBarWidth = timeBarCanvasWrapRef.value.offsetWidth
-          state.startTimeStamp = dayjs(getWholeTimeByUnit(props.currentTimeStamp.valueOf() - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject.unit)).valueOf()
+          state.startTimeStamp = dayjs(getWholeTimeByUnit(dayjs(props.currentTimeStamp).valueOf() - state.timeBarWidth / 2 * state.unitOfMs, state.unitOfObject?.unit || 'm')).valueOf()
         }
       }
 
       /**
        * 设置时间条起始时间
        */
-      const setStartTimeStamp = (time) => {
+      const setStartTimeStamp = (time: number) => {
         const endTimeStamp = state.startTimeStamp + state.timeBarWidth * state.unitOfMs;
         if (time < state.startTimeStamp || time > endTimeStamp) {
           initTimeBar();
@@ -102,13 +111,15 @@ export default {
       }
 
       const addCanvasEventListener = () => {
-        canvasTimeBar.on('time-bar-click', ({offset}) => {
+        if (!canvasTimeBar) return;
+        canvasTimeBar.on('time-bar-click', ({offset}: { offset: number }) => {
           const currentTimeStamp = Math.ceil(state.startTimeStamp + offset * state.unitOfMs);
-          emit('change', currentTimeStamp.valueOf());
+          emit('change', currentTimeStamp);
           emit('clickTimeBar')
         })
 
-        canvasTimeBar.on('time-bar-mousemove', ({movePixel}) => {
+        canvasTimeBar.on('time-bar-mousemove', (_payload: { movePixel: number }) => {
+          // noop
         })
 
         canvasTimeBar.on('time-bar-resize', () => {
@@ -118,34 +129,38 @@ export default {
         })
       }
 
-      const freeTimeStampChange = (time) => {
-        emit('change', time.valueOf());
+      const freeTimeStampChange = (time: number) => {
+        emit('change', time);
       }
 
-      const nowTimeStampChange = ({ offset, needNextPage, nowTimeStamp }) => {
+      const nowTimeStampChange = ({ nowTimeStamp }: { offset: number; needNextPage: boolean; nowTimeStamp: number }) => {
         emit('nowTimeStampChange', nowTimeStamp);
       }
 
-      const prevTimeTick = (rate) => {
+      const prevTimeTick = (rate: { value: number }) => {
         console.log('prevTimeTick', rate)
-        emit('change', props.currentTimeStamp + state.unitOfMs * rate.value );
+        emit('change', Number(props.currentTimeStamp) + state.unitOfMs * rate.value );
       }
 
-      const nextTimeTick = (rate) => {
+      const nextTimeTick = (rate: { value: number }) => {
         console.log('nextTimeTick', rate)
-        emit('change', props.currentTimeStamp + state.unitOfMs * rate.value);
+        emit('change', Number(props.currentTimeStamp) + state.unitOfMs * rate.value);
       }
 
       onMounted(() => {
         setTimeout(() => {
           initTimeBar()
-          canvasTimeBar = new CanvasTimeBar(timeBarCanvasWrapRef.value, timeBarCanvasRef.value, state)
-          addCanvasEventListener()
+          if (timeBarCanvasWrapRef.value && timeBarCanvasRef.value) {
+            canvasTimeBar = new CanvasTimeBar(timeBarCanvasWrapRef.value, timeBarCanvasRef.value, state)
+            addCanvasEventListener()
+          }
         })
       });
 
       onUnmounted(() => {
-        canvasTimeBar.dispose()
+        if (canvasTimeBar) {
+          canvasTimeBar.dispose()
+        }
       })
 
       const refData = toRefs(state);
@@ -162,8 +177,9 @@ export default {
         nextTimeTick,
       };
     }
-}
+})
 </script>
+
 <style lang="scss" scoped>
 .time-bar-wrap {
   width: 100%;

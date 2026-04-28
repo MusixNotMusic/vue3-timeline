@@ -3,7 +3,20 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "node",
-    "strict": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "declaration": true,
+    "declarationMap": true,
     "jsx": "preserve",
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
@@ -19,6 +32,6 @@
       "@/utils": ["src/utils/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "packages/**/*.ts", "packages/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

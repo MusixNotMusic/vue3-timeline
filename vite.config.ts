@@ -4,6 +4,7 @@ import Components from "unplugin-vue-components/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 import vue from '@vitejs/plugin-vue'
 import postcssPresetEnv from "postcss-preset-env";
+import dts from 'vite-plugin-dts'
 import pkg from './package.json'
 import path from 'path'
 
@@ -11,6 +12,13 @@ import path from 'path'
 export default defineConfig({
   plugins: [
     vue(),
+    dts({
+      entryRoot: 'packages',
+      outDir: 'dist',
+      insertTypesEntry: true,
+      cleanVueFileName: true,
+      tsconfigPath: './tsconfig.json',
+    }),
     AutoImport({
       resolvers: [ElementPlusResolver()],
     }),
@@ -19,22 +27,30 @@ export default defineConfig({
     })
   ],
   build: {
-    emptyOutDir: false, // 避免dist被清空
+    emptyOutDir: true,
     lib: {
-      entry: path.resolve(__dirname, 'packages/index.js'),
+      entry: path.resolve(__dirname, 'packages/index.ts'),
       name: pkg.name,
-      fileName: (format) => `${pkg.name}.${format}.js`,
+      fileName: (format) => `vue3-timeline-bar.${format}.js`,
+      formats: ['es', 'umd'],
     },
     rollupOptions: {
       // 把不想打包进你的包的包排除掉
       external: ["vue", "element-plus", "events", "dayjs"],
       output: {
+        exports: 'named',
+        assetFileNames: (chunkInfo) => {
+          if (chunkInfo.name?.endsWith('.css')) {
+            return 'style.css';
+          }
+          return chunkInfo.name || 'assets/[name]-[hash][extname]';
+        },
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
-          vue: "vue",
-          "events": "events",
+          vue: "Vue",
+          "events": "EventEmitter",
           "dayjs": "dayjs",
-          "element-plus": "elementPlus",
+          "element-plus": "ElementPlus",
         },
       },
     },

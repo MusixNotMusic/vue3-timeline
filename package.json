@@ -3,15 +3,16 @@
   "author": "MusixNotMusic<https://github.com/MusixNotMusic>",
   "private": false,
   "version": "1.1.10",
-  "main": "dist/@cdyw/vue3-timeline-bar.umd.js",
-  "module": "dist/@cdyw/vue3-timeline-bar.es.js",
+  "main": "dist/vue3-timeline-bar.umd.js",
+  "module": "dist/vue3-timeline-bar.es.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    "./style.css": "./dist/style.css",
     ".": {
-      "types": "./dist/vue3-timeline-bar.d.ts",
-      "import": "./dist/@cdyw/vue3-timeline-bar.es.js",
-      "require": "./dist/@cdyw/vue3-timeline-bar.umd.js"
-    }
+      "types": "./dist/index.d.ts",
+      "import": "./dist/vue3-timeline-bar.es.js",
+      "require": "./dist/vue3-timeline-bar.umd.js"
+    },
+    "./style.css": "./dist/style.css"
   },
   "type": "module",
   "repository": {
@@ -34,7 +35,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@cdyw/vue3-timeline-bar": "^1.1.9",
+    "@cdyw/vue3-timeline-bar": "^1.1.10",
     "dayjs": "^1.11.13",
     "element-plus": "^2.9.0",
     "events": "^3.3.0",

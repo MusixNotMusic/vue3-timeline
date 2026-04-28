@@ -1,27 +1,39 @@
 <template>
   <div class="time-tick-list">
-        <span v-for="(time, index) in list"
-              class="time-tick-item"
-              :key="index"
-              :style="{left: time.left + 'px', transform: `translate(-50%) scale(${time.scale})`}">{{time.value}}</span>
+    <span
+      v-for="(time, index) in list"
+      :key="index"
+      class="time-tick-item"
+      :style="{ left: time.left + 'px', transform: `translate(-50%) scale(${time.scale})` }"
+    >{{ time.value }}</span>
   </div>
 </template>
+
 <script lang="ts">
-export default {
+import { defineComponent, type PropType } from 'vue';
+
+export interface TimeTickItem {
+  value: string;
+  left: number;
+  scale: number;
+}
+
+export default defineComponent({
   name: 'TimeTickLabel',
   props: {
     list: {
-      type: Array,
-      default: () => []
+      type: Array as PropType<TimeTickItem[]>,
+      default: (): TimeTickItem[] => [],
     },
   },
-  setup (props: any) {
+  setup(props) {
     return {
-      ...props
-    }
-  }
-}
+      ...props,
+    };
+  },
+});
 </script>
+
 <style scoped lang="scss">
 .time-tick-list {
   width: 100%;
