@@ -35,7 +35,7 @@ import TimeTickLabel from './TimeTickLable.vue'
 import TimePointer from './FreePointer.vue'
 import { _setInterval, _clearInterval } from '../utils/interval'
 import { parseTimeStringToMillisecond } from '../utils/parseTime'
-import { ManualController } from '../../types'
+import { ManualController, PlayMode, TransformEventType } from '../../types'
 import '../iconfont/iconfont.css'
 
 enum Mode {
@@ -43,16 +43,16 @@ enum Mode {
   Live,
   Manual,
   Auto
-};
+}
 
 export default defineComponent({
     name: 'TimeLineMain',
-    emit: [
-      'autoAnimationTimeStampChange',
-      'manualAnimationTimeStampChange',
-      'currentTimeChange',
-      'update:modelValue'
-    ],
+    emits: {
+      autoAnimationTimeStampChange: (_timestamp: number) => true,
+      manualAnimationTimeStampChange: (_controller: ManualController) => true,
+      currentTimeChange: (_time: Date | number) => true,
+      'update:modelValue': (_value: Date | number) => true,
+    },
     components: {
       TimeNotController,
       TimeBarCanvasSimple,
@@ -77,7 +77,7 @@ export default defineComponent({
           default: 3 * 60 * 1000
         },
         playMode: {
-          type: String,
+          type: String as PropType<PlayMode>,
           default: 'auto'
         },
         live: Boolean
@@ -239,17 +239,8 @@ export default defineComponent({
          */
 
 
-        const transformEvent = (eventType: string, mode: Mode): void => {
-          let transformFunc = noop;
-          switch(eventType) {
-            case 'prevTime':   transformFunc = stateMechine[state.currentMode][mode]; break;
-            case 'nextTime':   transformFunc = stateMechine[state.currentMode][mode]; break;
-            case 'play':       transformFunc = stateMechine[state.currentMode][mode]; break;
-            case 'changeTime': transformFunc = stateMechine[state.currentMode][mode]; break;
-            case 'liveMode':   transformFunc = stateMechine[state.currentMode][mode]; break;
-            case 'clickTimeBar':   transformFunc = stateMechine[state.currentMode][mode]; break;
-          }
-
+        const transformEvent = (_eventType: TransformEventType, mode: Mode): void => {
+          const transformFunc = stateMechine[state.currentMode][mode] ?? noop;
           transformFunc();
           state.currentMode = mode;
         }

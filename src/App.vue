@@ -4,8 +4,8 @@ import dayjs from 'dayjs';
 // import TimeLineMain from '../packages/src/TimeLine/simple/TimeLineMain.vue'
 // import TimeLineSimpleMain from '../packages/src/TimeLine/v2/TimeLineSimpleMain.vue'
 
-import { TimeLineMain, TimeLineSimpleMain } from '@cdyw/vue3-timeline-bar'
-// import { TimeLineMain, TimeLineSimpleMain } from '../dist'
+// import { TimeLineMain, TimeLineSimpleMain } from '@cdyw/vue3-timeline-bar'
+import { TimeLineMain, TimeLineSimpleMain } from '../dist'
 import '@cdyw/vue3-timeline-bar/style.css'
 
 

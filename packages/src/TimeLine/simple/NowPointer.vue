@@ -11,16 +11,13 @@
 <script lang="ts">
 import { defineComponent, onMounted, onUnmounted, reactive, watch, computed, nextTick, type PropType, type CSSProperties } from 'vue';
 import { _setInterval, _clearInterval } from '../utils/interval';
-
-export interface NowPointerChangePayload {
-  offset: number;
-  needNextPage: boolean;
-  nowTimeStamp: number;
-}
+import type { NowPointerChangePayload } from '../../types';
 
 export default defineComponent({
   name: 'NowPointer',
-  emits: ['change'],
+  emits: {
+    change: (_payload: NowPointerChangePayload) => true,
+  },
   props: {
     unitTime: {
       type: [Number, String] as PropType<number | string>,

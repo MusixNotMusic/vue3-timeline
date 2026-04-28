@@ -1,28 +1,9 @@
 import dayjs from 'dayjs';
-import { carryBitTable, type CarryBitInfo } from './parseTime';
+import { carryBitTable } from './parseTime';
+import type { CarryBitInfo, TimeBarState, ListenerHandle } from '../../types';
 import { EventEmitter } from 'events';
 
 const CLICK_LEFT = 1;
-
-export interface TimeBarState {
-  startTimeStamp: number;
-  timeTickList: TimeTickItem[];
-  unitOfMs: number;
-  unitOfObject: { value: number; unit: string } | null;
-  timeBarWidth: number;
-  pointerDisabled: boolean;
-  futureMode?: boolean;
-}
-
-export interface TimeTickItem {
-  value: string;
-  left: number;
-  scale: number;
-}
-
-export interface ListenerHandle {
-  dispose: () => void;
-}
 
 export class CanvasTimeBar extends EventEmitter {
   container: HTMLElement | null;

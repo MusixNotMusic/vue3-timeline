@@ -15,17 +15,14 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, reactive, watch, computed, type PropType, type CSSProperties } from 'vue';
 import dayjs from 'dayjs';
-import { carryBitTable, parseTimeStringToObject, type TimeUnitObject } from '../utils/parseTime';
-
-export interface PointerChangePayload {
-  offset: number;
-  needNextPage: boolean;
-  nowTimeStamp: number;
-}
+import { carryBitTable, parseTimeStringToObject } from '../utils/parseTime';
+import type { TimeUnitObject } from '../../types';
 
 export default defineComponent({
   name: 'FreePointer',
-  emits: ['mousemove', 'mouseup', 'change'],
+  emits: {
+    change: (_time: number) => true,
+  },
   props: {
     timeBarWidth: {
       type: [Number, String] as PropType<number | string>,

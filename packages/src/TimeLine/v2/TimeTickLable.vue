@@ -11,12 +11,7 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-
-export interface TimeTickItem {
-  value: string;
-  left: number;
-  scale: number;
-}
+import type { TimeTickItem, TimeTickLabelProps } from '../../types';
 
 export default defineComponent({
   name: 'TimeTickLabel',
@@ -26,7 +21,7 @@ export default defineComponent({
       default: (): TimeTickItem[] => [],
     },
   },
-  setup(props) {
+  setup(props: TimeTickLabelProps) {
     return {
       ...props,
     };

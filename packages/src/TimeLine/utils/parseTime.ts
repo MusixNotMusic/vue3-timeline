@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import type { CarryBitInfo, TimeUnitObject } from '../../types';
 
 export const regex = /^(\d{1,2})([smMhHdD])$/;
 
@@ -12,15 +13,6 @@ export const UnitOfTimeTable: Record<string, number> = {
   D: 24 * 60 * 60 * 1000,
 };
 
-export interface CarryBitInfo {
-  unit: string;
-  carryUnitTime: number;
-  tickLevel: number[];
-  colors: string[];
-  formatTime: string;
-  scale: number;
-}
-
 export const carryBitTable: Record<string, CarryBitInfo> = {
   s: { unit: 'minute', carryUnitTime: UnitOfTimeTable['m'], tickLevel: [1, 2, 6], colors: ['blue', 'orange', 'orangered'], formatTime: 'HH:mm:ss', scale: 0.9 },
   m: { unit: 'hour', carryUnitTime: UnitOfTimeTable['H'], tickLevel: [1, 2, 6], colors: ['black', 'orangered', 'black'], formatTime: 'HH:mm', scale: 1 },
@@ -28,11 +20,6 @@ export const carryBitTable: Record<string, CarryBitInfo> = {
   h: { unit: 'day', carryUnitTime: UnitOfTimeTable['D'], tickLevel: [0.5, 1, 2, 12], colors: ['black', 'blue', 'black', 'orangered'], formatTime: 'MM-DD:HH', scale: 0.8 },
   H: { unit: 'day', carryUnitTime: UnitOfTimeTable['D'], tickLevel: [0.5, 1, 2, 12], colors: ['black', 'blue', 'black', 'orangered'], formatTime: 'MM-DD:HH', scale: 0.8 },
 };
-
-export interface TimeUnitObject {
-  value: number;
-  unit: string;
-}
 
 export function parseTimeStringToObject(strTime: string | number): TimeUnitObject | null {
   if (typeof strTime === 'number') {

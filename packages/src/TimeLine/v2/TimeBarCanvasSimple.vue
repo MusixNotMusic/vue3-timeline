@@ -40,27 +40,21 @@ import { CanvasTimeBar } from "../utils/canvasTimeBarV2";
 import TimeTickLabel from './TimeTickLable.vue'
 import FreePointer from './FreePointer.vue'
 import NowPointer from './NowPointer.vue'
-
-export interface TimeBarState {
-  startTimeStamp: number;
-  timeTickList: { value: string; left: number; scale: number }[];
-  unitOfMs: number;
-  unitOfObject: { value: number; unit: string } | null;
-  timeBarWidth: number;
-  pointerDisabled: boolean;
-  futureMode: boolean;
-}
+import type { TimeBarState, NowPointerChangePayload } from '../../types';
 
 export default defineComponent({
     name: "TimeBarCanvasSimple",
-    emits:['clickTimeBar', 'nowTimeStampChange', 'change'],
+    emits: {
+      clickTimeBar: () => true,
+      nowTimeStampChange: (_timestamp: number) => true,
+      change: (_timestamp: number) => true,
+    },
     components: { TimeTickLabel, FreePointer, NowPointer },
     props: {
         currentTimeStamp: {
             type: [Date, Number] as PropType<Date | number>,
             default: () => Date.now()
         },
-        // 一像素 时间单位 最小单位 ms
         onePixelTimeUnit: {
             type: [Number, String] as PropType<number | string>,
             default: '30s'
@@ -161,8 +155,8 @@ export default defineComponent({
         emit('change', time);
       }
 
-      const nowTimeStampChange = ({ nowTimeStamp }: { offset: number; needNextPage: boolean; nowTimeStamp: number }) => {
-        emit('nowTimeStampChange', nowTimeStamp);
+      const nowTimeStampChange = (payload: NowPointerChangePayload) => {
+        emit('nowTimeStampChange', payload.nowTimeStamp);
       }
 
       const prevTimeTick = (rate: { value: number }) => {

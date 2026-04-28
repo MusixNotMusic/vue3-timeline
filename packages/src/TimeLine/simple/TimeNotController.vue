@@ -22,14 +22,15 @@
 
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from 'vue';
-
-export interface TickRate {
-  value: number;
-}
+import type { TickRate } from '../../types';
 
 export default defineComponent({
   name: 'TimeController',
-  emits: ['preTimeTickClick', 'nextTimeTickClick', 'playAnimationClick'],
+  emits: {
+    preTimeTickClick: (_rate: TickRate) => true,
+    nextTimeTickClick: (_rate: TickRate) => true,
+    playAnimationClick: (_isPlay: boolean) => true,
+  },
   setup(_props, { emit }) {
     const state = reactive({
       isPlay: false,

@@ -17,21 +17,30 @@ export {
   TimeLineSimpleMain
 }
 
-// 公共类型
-export type { ManualController, PlayMode } from './src/types'
+// 统一类型入口
+export type {
+  ManualController,
+  PlayMode,
+  TimeLineMainProps,
+  TimeLineSimpleMainProps,
+  TimeBarCanvasProps,
+  FreePointerProps,
+  NowPointerProps,
+  TimeTickLabelProps,
+  NowPointerChangePayload,
+  TickRate,
+  TimeNotControllerEmits,
+  TransformEventType,
+  TimeBarState,
+  TimeTickItem,
+  ListenerHandle,
+  CarryBitInfo,
+  TimeUnitObject,
+} from './src/types'
 
-// Utils 类型与工具
-export {
-  CanvasTimeBar,
-  type TimeBarState,
-  type TimeTickItem,
-  type ListenerHandle,
-} from './src/TimeLine/utils/canvasTimeBar'
-
-export {
-  CanvasTimeBar as CanvasTimeBarV2,
-} from './src/TimeLine/utils/canvasTimeBarV2'
-
+// Utils 工具类与函数
+export { CanvasTimeBar } from './src/TimeLine/utils/canvasTimeBar'
+export { CanvasTimeBar as CanvasTimeBarV2 } from './src/TimeLine/utils/canvasTimeBarV2'
 export {
   carryBitTable,
   UnitOfTimeTable,
@@ -40,10 +49,7 @@ export {
   parseTimeStringToMillisecond,
   getValueByUnit,
   getWholeTimeByUnit,
-  type CarryBitInfo,
-  type TimeUnitObject,
 } from './src/TimeLine/utils/parseTime'
-
 export {
   _setInterval,
   _clearInterval,
