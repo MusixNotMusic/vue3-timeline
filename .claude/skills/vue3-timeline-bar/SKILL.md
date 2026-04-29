@@ -4,10 +4,9 @@ description: >
   Vue3 时间轴组件库 @cdyw/vue3-timeline-bar 的开发助手。
   提供组件 API 查询、状态机说明、构建流程指导、TypeScript 类型使用示例。
   适用于在项目中开发、调试或扩展时间轴相关功能时调用。
-triggers:
-  - timeline-bar
-  - vue3-timeline-bar
-  - 时间轴组件
+when_to_use: >
+  触发时机：用户询问时间轴组件用法、TimeLineMain / TimeLineSimpleMain / TimeBarCanvasSimple 相关 API、
+  状态机模式、构建产物、TypeScript 类型导入、v2 与 simple 版本区别、Canvas 时间条渲染等问题。
 ---
 
 # @cdyw/vue3-timeline-bar Skill

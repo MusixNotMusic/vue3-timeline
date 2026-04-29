@@ -9,7 +9,8 @@
       "Bash(npm run *)",
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({files:p.files,main:p.main,module:p.module,exports:p.exports},null,2\\)\\)\")",
       "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({types:p.types,exports:p.exports},null,2\\)\\)\")",
-      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({types:p.types,main:p.main,module:p.module,exports:p.exports},null,2\\)\\)\")"
+      "Bash(node -e \"const p=require\\('./package.json'\\); console.log\\(JSON.stringify\\({types:p.types,main:p.main,module:p.module,exports:p.exports},null,2\\)\\)\")",
+      "WebSearch"
     ]
   }
 }
